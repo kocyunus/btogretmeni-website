@@ -16,7 +16,17 @@ export default function GamesAdminPage() {
     technologies: [],
     category: 'hyper-casual',
     releaseDate: new Date().toISOString().split('T')[0],
-    rating: 0
+    rating: 0,
+    screenshots: [],
+    downloads: '0',
+    tags: [],
+    createdAt: new Date(),
+    isPublished: false,
+    version: '1.0.0',
+    developer: {
+      name: 'BT Öğretmeni'
+    },
+    status: 'draft'
   };
 
   useEffect(() => {
