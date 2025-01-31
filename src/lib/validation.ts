@@ -45,29 +45,14 @@ export const userSchema = z.object({
 });
 
 // HTML içeriğini temizle
-export async function sanitizeHtml(html: string): Promise<string> {
-  if (typeof window === 'undefined') {
-    const { default: createDOMPurify } = await import('dompurify');
-    const { JSDOM } = await import('jsdom');
-    const window = new JSDOM('').window;
-    const DOMPurify = createDOMPurify(window);
-    return DOMPurify.sanitize(html, {
-      ALLOWED_TAGS: [
-        'p', 'br', 'b', 'i', 'em', 'strong', 'a', 'ul', 'ol', 'li',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre'
-      ],
-      ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
-    });
-  } else {
-    const DOMPurify = (await import('isomorphic-dompurify')).default;
-    return DOMPurify.sanitize(html, {
-      ALLOWED_TAGS: [
-        'p', 'br', 'b', 'i', 'em', 'strong', 'a', 'ul', 'ol', 'li',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre'
-      ],
-      ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
-    });
-  }
+export function sanitizeHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: [
+      'p', 'br', 'b', 'i', 'em', 'strong', 'a', 'ul', 'ol', 'li',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre'
+    ],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+  });
 }
 
 // Metin içeriğini temizle (HTML olmayan)
