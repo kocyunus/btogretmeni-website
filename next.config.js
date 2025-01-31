@@ -12,6 +12,16 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   webpack: (config, { isServer }) => {
+    // Cheerio için özel kural
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
