@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.323.0",
+    "lru-cache": "^10.2.0",
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.5",
     "nanoid": "^5.0.9",
@@ -48,12 +49,14 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@eslint/config-array": "^3.0.0",
+    "@eslint/object-schema": "^2.0.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.52",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
-    "eslint": "^8.56.0",
+    "eslint": "^9.0.0",
     "eslint-config-next": "14.1.0",
     "glob": "^10.3.10",
     "postcss": "^8.4.33",
