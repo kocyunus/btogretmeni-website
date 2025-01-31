@@ -30,21 +30,12 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       description: post.description,
       url: `https://yunuskoc.com/blog/${post.id}`,
       type: 'article',
-      authors: [post.author.name],
-      images: [
-        {
-          url: post.coverImage,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
+      authors: [post.author.name]
     },
     twitter: {
-      card: 'summary_large_image',
+      card: 'summary',
       title: post.title,
-      description: post.description,
-      images: [post.coverImage],
+      description: post.description
     },
   };
 }
