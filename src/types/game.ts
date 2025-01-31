@@ -11,6 +11,7 @@ export interface Game {
   category: string;
   tags: string[];
   technologies: string[];
+  releaseDate: string;
   createdAt: Date;
   updatedAt?: Date;
   isPublished: boolean;
