@@ -5,7 +5,7 @@ import BlogPostModel from '@/models/BlogPost';
 import type { Document } from 'mongoose';
 
 // BlogPost interface'ini @/types/blog'dan import ediyoruz
-import type { BlogPost as BaseBlogPost } from '@/types/blog';
+import type { BlogPost } from '@/types/blog';
 
 // BlogPost tipini tanımlıyoruz
 export interface BlogPost {
@@ -80,13 +80,19 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 // Blog yazısını getir
 export async function getBlogPost(id: string): Promise<BlogPost | null> {
   try {
-    await connectToDatabase();
-    const BlogPost = getModel();
-    const post = await BlogPost.findById(id);
-    return post ? formatPost(post) : null;
+    const response = await fetch(`/api/blog/${id}`);
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    return {
+      ...data,
+      _id: id,
+      publishedAt: new Date(data.publishedAt || new Date())
+    } as BlogPost;
   } catch (error) {
     console.error('Blog yazısı getirilirken hata:', error);
-    throw error;
+    return null;
   }
 }
 
