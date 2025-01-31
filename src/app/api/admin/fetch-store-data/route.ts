@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
-import * as cheerio from 'cheerio';
+import { parse } from 'node-html-parser';
 
 async function checkAuth(cookieStore: ReadonlyRequestCookies): Promise<boolean> {
   const adminToken = cookieStore.get('admin_token')?.value;
@@ -29,16 +29,15 @@ export async function POST(request: Request) {
       const html = await response.text();
       console.log('HTML içeriği alındı, uzunluk:', html.length);
       
-      const $ = cheerio.load(html);
+      const root = parse(html);
       
-      // Play Store'un güncel HTML yapısına göre seçicileri güncelliyorum
       const data = {
-        title: $('h1').first().text().trim(),
-        description: $('[data-g-id="description"]').text().trim(),
-        imageUrl: $('img[alt*="icon"]').first().attr('src'),
-        screenshots: $('img[alt*="screenshot"]').map((_, el) => $(el).attr('src')).get(),
-        rating: parseFloat($('[aria-label*="rating"]').first().text()) || 0,
-        downloads: $('[aria-label*="downloads"]').first().text().trim(),
+        title: root.querySelector('h1')?.text?.trim() || '',
+        description: root.querySelector('[data-g-id="description"]')?.text?.trim() || '',
+        imageUrl: root.querySelector('img[alt*="icon"]')?.getAttribute('src') || '',
+        screenshots: root.querySelectorAll('img[alt*="screenshot"]').map(el => el.getAttribute('src')).filter(Boolean),
+        rating: parseFloat(root.querySelector('[aria-label*="rating"]')?.text || '0'),
+        downloads: root.querySelector('[aria-label*="downloads"]')?.text?.trim() || '',
       };
 
       console.log('Çekilen veriler:', data);
