@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BT Ogretmeni
 
-## Getting Started
+Kisisel blog ve egitim platformu.
 
-First, run the development server:
+## Ozellikler
 
+- Blog yazilari
+- Egitim icerikleri
+- Proje portfoyu
+- Analytics entegrasyonu
+- SEO optimizasyonu
+
+## Teknolojiler
+
+- Next.js 14
+- React
+- TypeScript
+- Tailwind CSS
+- Firebase Analytics
+- Vercel Deployment
+
+## Baslangic
+
+1. Gereksinimleri yukleyin:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Gelistirme sunucusunu baslatın:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Tarayicinizda acin:
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Firebase Yapilandirmasi
 
-## Learn More
+1. `.env.local` dosyasi olusturun
+2. Firebase yapilandirma bilgilerini ekleyin
+3. Analytics'i aktif edin
 
-To learn more about Next.js, take a look at the following resources:
+## Katki
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Katki saglamak icin:
+1. Fork yapin
+2. Feature branch olusturun
+3. Degisikliklerinizi commit edin
+4. Pull request gonderin
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Lisans
 
-## Deploy on Vercel
+MIT
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Iletisim
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Website: [btogretmeni.com](https://btogretmeni.com)
+- Email: info@btogretmeni.com
+
+## Veritabanı Kaynakları
+
+### MongoDB
+
+MongoDB ile ilgili kaynaklar:
+
+- [MongoDB Resmi Sürücü Belgeleri](https://www.mongodb.com/docs/drivers/) - MongoDB sürücüleri hakkında detaylı bilgi ve kullanım kılavuzları.
