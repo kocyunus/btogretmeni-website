@@ -10,6 +10,7 @@ export interface Game {
   downloads: string;
   category: string;
   tags: string[];
+  technologies: string[];
   createdAt: Date;
   updatedAt?: Date;
   isPublished: boolean;
