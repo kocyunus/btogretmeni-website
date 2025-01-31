@@ -29,7 +29,7 @@ async function BlogPosts() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {posts.map((post, index) => (
-          <Link href={`/blog/${post.id}`} key={post.id}>
+          <Link href={`/blog/${post._id}`} key={post._id}>
             <article className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
               <div className={`relative h-48 bg-gradient-to-r ${gradients[index % gradients.length]} p-6 flex items-center justify-center`}>
                 <h2 className="text-2xl font-bold text-white text-center line-clamp-3">

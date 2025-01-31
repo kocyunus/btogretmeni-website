@@ -3,38 +3,7 @@
 import { connectToDatabase } from '@/lib/mongodb';
 import BlogPostModel from '@/models/BlogPost';
 import type { Document } from 'mongoose';
-
-// BlogPost interface'ini @/types/blog'dan import ediyoruz
 import type { BlogPost } from '@/types/blog';
-
-// BlogPost tipini tanımlıyoruz
-export interface BlogPost {
-  id: string;
-  title: string;
-  description: string;
-  content: string;
-  excerpt: string;
-  readingTime: number;
-  tags: string[];
-  isDraft: boolean;
-  publishedAt: Date;
-  updatedAt?: Date;
-  author: {
-    name: string;
-    title: string;
-    avatarUrl: string;
-  };
-  sources: Array<{
-    title: string;
-    url: string;
-    description?: string;
-  }>;
-  seo: {
-    title: string;
-    description: string;
-    keywords: string[];
-  };
-}
 
 // Model kontrolü
 function getModel() {
@@ -48,7 +17,7 @@ function getModel() {
 function formatPost(doc: Document): BlogPost {
   const post = doc.toObject();
   return {
-    id: post._id.toString(),
+    _id: post._id.toString(),
     title: post.title,
     description: post.description,
     content: post.content,
@@ -59,8 +28,7 @@ function formatPost(doc: Document): BlogPost {
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt ? new Date(post.updatedAt) : undefined,
     author: post.author,
-    sources: post.sources || [],
-    seo: post.seo || {}
+    sources: post.sources || []
   };
 }
 
