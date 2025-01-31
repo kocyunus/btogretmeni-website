@@ -28,7 +28,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
   try {
     await connectToDatabase();
     const BlogPost = getModel();
-    const posts = await BlogPost.find({ isDraft: false }).sort({ publishedAt: -1 });
+    const posts = await BlogPost.find().sort({ publishedAt: -1 });
     return posts.map(post => formatPost(post));
   } catch (error) {
     console.error('Blog yazıları getirilirken hata:', error);
@@ -39,16 +39,15 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 // Blog yazısını getir
 export async function getBlogPost(id: string): Promise<BlogPost | null> {
   try {
-    const response = await fetch(`/api/blog/${id}`);
-    if (!response.ok) {
+    await connectToDatabase();
+    const BlogPost = getModel();
+    const post = await BlogPost.findById(id);
+    
+    if (!post) {
       return null;
     }
-    const data = await response.json();
-    return {
-      ...data,
-      id: data._id || id,
-      publishedAt: new Date(data.publishedAt || new Date())
-    } as BlogPost;
+
+    return formatPost(post);
   } catch (error) {
     console.error('Blog yazısı getirilirken hata:', error);
     return null;
