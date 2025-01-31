@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     openGraph: {
       title: post.title,
       description: post.description,
-      url: `https://yunuskoc.com/blog/${post._id}`,
+      url: `https://yunuskoc.com/blog/${post.id}`,
       type: 'article',
       authors: [post.author.name]
     },

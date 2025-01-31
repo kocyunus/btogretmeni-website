@@ -10,7 +10,7 @@ interface Props {
 
 export default function BlogCard({ post }: Props) {
   return (
-    <Link href={`/blog/${post._id}`}>
+    <Link href={`/blog/${post.id}`}>
       <article className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
         <div className="relative h-48 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
           <div className="absolute inset-0 flex items-center justify-center p-4">

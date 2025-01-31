@@ -17,18 +17,9 @@ function getModel() {
 function formatPost(doc: Document): BlogPost {
   const post = doc.toObject();
   return {
-    _id: post._id.toString(),
-    title: post.title,
-    description: post.description,
-    content: post.content,
-    excerpt: post.excerpt,
-    readingTime: post.readingTime,
-    tags: post.tags || [],
-    isDraft: post.isDraft || false,
-    publishedAt: post.publishedAt,
-    updatedAt: post.updatedAt ? new Date(post.updatedAt) : undefined,
-    author: post.author,
-    sources: post.sources || []
+    ...post,
+    id: post._id.toString(),
+    publishedAt: new Date(post.publishedAt || new Date())
   };
 }
 
@@ -55,7 +46,7 @@ export async function getBlogPost(id: string): Promise<BlogPost | null> {
     const data = await response.json();
     return {
       ...data,
-      _id: id,
+      id: data._id || id,
       publishedAt: new Date(data.publishedAt || new Date())
     } as BlogPost;
   } catch (error) {

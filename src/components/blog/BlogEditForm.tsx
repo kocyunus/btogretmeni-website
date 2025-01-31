@@ -17,7 +17,7 @@ interface Props {
 export default function BlogEditForm({ id }: Props) {
   const router = useRouter();
   const [post, setPost] = useState<BlogFormData>({
-    _id: id,
+    id: id,
     title: '',
     description: '',
     content: '',

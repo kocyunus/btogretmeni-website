@@ -18,7 +18,7 @@ export interface SEO {
 }
 
 export interface BlogPost {
-  _id: string;
+  id: string;
   title: string;
   description: string;
   content: string;
