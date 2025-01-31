@@ -4,6 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { BlogPost } from '@/types/blog';
 
+interface BlogPostFormData {
+  title: string;
+  description: string;
+  content: string;
+  excerpt: string;
+  readingTime: string;
+  coverImage: string;
+  tags: string[];
+  isDraft: boolean;
+  publishedAt: Date;
+  authorName: string;
+  authorTitle: string;
+  authorImage: string;
+}
+
 interface FormData {
   title: string;
   description: string;
@@ -36,109 +51,96 @@ const initialFormData: FormData = {
   }
 };
 
-export default function EditBlogPostClient({ params }: { params: { id: string } }) {
+export default function EditBlogPostClient({ post }: { post: BlogPost }) {
   const router = useRouter();
-  const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<BlogPostFormData>({
+    title: post.title,
+    description: post.description,
+    content: post.content,
+    excerpt: post.excerpt,
+    readingTime: post.readingTime,
+    coverImage: post.coverImage,
+    tags: post.tags,
+    isDraft: post.isDraft || false,
+    publishedAt: post.publishedAt,
+    authorName: post.author.name,
+    authorTitle: post.author.title,
+    authorImage: post.author.image
+  });
 
-  useEffect(() => {
-    async function fetchPost() {
-      try {
-        const response = await fetch(`/api/blog/${params.id}`);
-        if (!response.ok) throw new Error('Blog yazısı yüklenemedi');
-        const data: BlogPost = await response.json();
-        setFormData({
-          title: data.title,
-          description: data.description,
-          content: data.content,
-          excerpt: data.excerpt,
-          readingTime: data.readingTime,
-          coverImage: data.coverImage,
-          tags: data.tags,
-          isDraft: data.isDraft || false,
-          author: data.author
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Bir hata oluştu');
-      }
-    }
-    fetchPost();
-  }, [params.id]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tags = e.target.value.split(',').map(tag => tag.trim());
-    setFormData(prev => ({
-      ...prev,
-      tags
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
     try {
-      const response = await fetch(`/api/blog/${params.id}`, {
+      setIsSubmitting(true);
+      const response = await fetch(`/api/blog/${post.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          content: formData.content,
+          excerpt: formData.excerpt,
+          readingTime: formData.readingTime,
+          coverImage: formData.coverImage,
+          tags: formData.tags,
+          isDraft: formData.isDraft,
+          publishedAt: formData.publishedAt,
+          author: {
+            name: formData.authorName,
+            title: formData.authorTitle,
+            image: formData.authorImage
+          }
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Blog yazısı güncellenirken bir hata oluştu');
+        throw new Error('Failed to update blog post');
       }
 
       router.push('/admin/blog');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+    } catch (error) {
+      console.error('Error updating blog post:', error);
+      setError('Failed to update blog post. Please try again.');
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  if (error) {
-    return (
-      <div className="p-4 bg-red-50 text-red-500 rounded-lg">
-        Hata: {error}
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto p-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Başlık
+        <label htmlFor="title" className="block text-sm font-medium text-gray-300">
+          Title
         </label>
         <input
-          id="title"
           type="text"
+          id="title"
           name="title"
           value={formData.title}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
-          placeholder="Blog yazısı başlığı"
         />
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Açıklama
+        <label htmlFor="description" className="block text-sm font-medium text-gray-300">
+          Description
         </label>
         <textarea
           id="description"
@@ -146,15 +148,14 @@ export default function EditBlogPostClient({ params }: { params: { id: string } 
           value={formData.description}
           onChange={handleChange}
           rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
-          placeholder="Blog yazısının kısa açıklaması"
         />
       </div>
 
       <div>
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          İçerik
+        <label htmlFor="content" className="block text-sm font-medium text-gray-300">
+          Content
         </label>
         <textarea
           id="content"
@@ -162,33 +163,160 @@ export default function EditBlogPostClient({ params }: { params: { id: string } 
           value={formData.content}
           onChange={handleChange}
           rows={10}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
-          placeholder="Blog yazısının içeriği"
         />
       </div>
 
       <div>
-        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Etiketler (virgülle ayırın)
+        <label htmlFor="excerpt" className="block text-sm font-medium text-gray-300">
+          Excerpt
         </label>
-        <input
-          id="tags"
-          type="text"
-          value={formData.tags.join(', ')}
-          onChange={handleTagsChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          placeholder="Örnek: eğitim, teknoloji, kodlama"
+        <textarea
+          id="excerpt"
+          name="excerpt"
+          value={formData.excerpt}
+          onChange={handleChange}
+          rows={2}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-      >
-        {isLoading ? 'Güncelleniyor...' : 'Güncelle'}
-      </button>
+      <div>
+        <label htmlFor="readingTime" className="block text-sm font-medium text-gray-300">
+          Reading Time
+        </label>
+        <input
+          type="text"
+          id="readingTime"
+          name="readingTime"
+          value={formData.readingTime}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="coverImage" className="block text-sm font-medium text-gray-300">
+          Cover Image URL
+        </label>
+        <input
+          type="text"
+          id="coverImage"
+          name="coverImage"
+          value={formData.coverImage}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="tags" className="block text-sm font-medium text-gray-300">
+          Tags (comma separated)
+        </label>
+        <input
+          type="text"
+          id="tags"
+          name="tags"
+          value={formData.tags.join(', ')}
+          onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value.split(',').map(tag => tag.trim()) }))}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="isDraft" className="block text-sm font-medium text-gray-300">
+          Draft
+        </label>
+        <input
+          type="checkbox"
+          id="isDraft"
+          name="isDraft"
+          checked={formData.isDraft}
+          onChange={(e) => setFormData(prev => ({ ...prev, isDraft: e.target.checked }))}
+          className="mt-1 h-4 w-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="publishedAt" className="block text-sm font-medium text-gray-300">
+          Published At
+        </label>
+        <input
+          type="date"
+          id="publishedAt"
+          name="publishedAt"
+          value={formData.publishedAt.toISOString().split('T')[0]}
+          onChange={(e) => setFormData(prev => ({ ...prev, publishedAt: new Date(e.target.value) }))}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="authorName" className="block text-sm font-medium text-gray-300">
+          Author Name
+        </label>
+        <input
+          type="text"
+          id="authorName"
+          name="authorName"
+          value={formData.authorName}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="authorTitle" className="block text-sm font-medium text-gray-300">
+          Author Title
+        </label>
+        <input
+          type="text"
+          id="authorTitle"
+          name="authorTitle"
+          value={formData.authorTitle}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="authorImage" className="block text-sm font-medium text-gray-300">
+          Author Image URL
+        </label>
+        <input
+          type="text"
+          id="authorImage"
+          name="authorImage"
+          value={formData.authorImage}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div className="flex justify-end space-x-4">
+        <button
+          type="button"
+          onClick={() => router.push('/admin/blog')}
+          className="inline-flex justify-center rounded-md border border-transparent bg-gray-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+        >
+          {isSubmitting ? 'Saving...' : 'Save'}
+        </button>
+      </div>
     </form>
   );
 } 

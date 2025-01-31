@@ -1,9 +1,10 @@
-import { jwtVerify, SignJWT } from 'jose';
+import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 // JWT için secret key
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret');
+const TOKEN_NAME = 'token';
 
 // Oturum süresi (24 saat)
 const SESSION_DURATION = 24 * 60 * 60; // saniye cinsinden
@@ -20,72 +21,96 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: UserRole;
-  twoFactorEnabled?: boolean;
+  role: string;
 }
 
 // JWT payload tipi
-interface JWTPayload {
+export interface JWTPayload {
+  [key: string]: string | undefined;
   id: string;
   email: string;
   name: string;
-  role: UserRole;
+  role: string;
 }
 
 // JWT token oluştur
-export async function createToken(user: User): Promise<string> {
-  const token = await new SignJWT({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime(`${SESSION_DURATION}s`)
-    .sign(JWT_SECRET);
-
-  return token;
+export async function signJWT(payload: JWTPayload): Promise<string> {
+  try {
+    const token = await new SignJWT(payload)
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('1d')
+      .sign(JWT_SECRET);
+    return token;
+  } catch (error) {
+    console.error('JWT imzalanırken hata:', error);
+    throw error;
+  }
 }
 
 // JWT token doğrula
-export async function verifyToken(token: string): Promise<User | null> {
+export async function verifyJWT(token: string): Promise<JWTPayload> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    const jwtPayload = payload as JWTPayload;
-    
     return {
-      id: jwtPayload.id,
-      email: jwtPayload.email,
-      name: jwtPayload.name,
-      role: jwtPayload.role,
-      twoFactorEnabled: false, // Varsayılan değer
+      id: payload.id as string,
+      email: payload.email as string,
+      name: payload.name as string,
+      role: payload.role as string
     };
   } catch (error) {
-    console.error('Token doğrulama hatası:', error);
-    return null;
+    console.error('JWT doğrulanırken hata:', error);
+    throw error;
   }
 }
 
 // Mevcut kullanıcıyı al
-export async function getCurrentUser(request?: NextRequest): Promise<User | null> {
+export async function getToken(): Promise<string | undefined> {
+  const cookieStore = cookies();
+  const token = cookieStore.get(TOKEN_NAME);
+  return token?.value;
+}
+
+// Oturum açma işlemi
+export async function login(email: string, password: string): Promise<User | null> {
+  // TODO: Veritabanından kullanıcıyı bul ve şifreyi kontrol et
+  // Bu örnek için sabit bir kullanıcı döndürüyoruz
+  if (email === 'admin@btogretmeni.com' && password === process.env.ADMIN_PASSWORD) {
+    return {
+      id: '1',
+      email: 'admin@btogretmeni.com',
+      name: 'Admin',
+      role: UserRole.ADMIN.toString(),
+    };
+  }
+  return null;
+}
+
+// Oturum kapatma işlemi
+export async function logout(): Promise<void> {
+  const cookieStore = cookies();
+  cookieStore.delete(TOKEN_NAME);
+}
+
+export async function getUser(request?: NextRequest): Promise<User | null> {
   try {
-    let token: string | undefined;
-    
-    if (request) {
-      token = request.cookies.get('auth_token')?.value;
-    } else {
-      const cookieStore = cookies();
-      token = (await cookieStore).get('auth_token')?.value;
-    }
+    const token = request
+      ? request.cookies.get(TOKEN_NAME)?.value
+      : (await getToken());
 
     if (!token) {
       return null;
     }
 
-    return await verifyToken(token);
+    const payload = await verifyJWT(token);
+
+    return {
+      id: payload.id,
+      email: payload.email,
+      name: payload.name,
+      role: payload.role
+    };
   } catch (error) {
-    console.error('Kullanıcı bilgisi alınamadı:', error);
+    console.error('Kullanıcı bilgisi alınırken hata:', error);
     return null;
   }
 }
@@ -102,7 +127,7 @@ export function checkPermission(user: User | null, requiredRole: UserRole): bool
     [UserRole.VIEWER]: 1,
   };
 
-  return roleHierarchy[user.role] >= roleHierarchy[requiredRole];
+  return roleHierarchy[user.role as UserRole] >= roleHierarchy[requiredRole];
 }
 
 // İki faktörlü kimlik doğrulama için kod oluştur
@@ -115,24 +140,17 @@ export function verifyTwoFactorCode(code: string, storedCode: string): boolean {
   return code === storedCode;
 }
 
-// Oturum açma işlemi
-export async function login(email: string, password: string): Promise<User | null> {
-  // TODO: Veritabanından kullanıcıyı bul ve şifreyi kontrol et
-  // Bu örnek için sabit bir kullanıcı döndürüyoruz
-  if (email === 'admin@btogretmeni.com' && password === process.env.ADMIN_PASSWORD) {
-    return {
-      id: '1',
-      email: 'admin@btogretmeni.com',
-      name: 'Admin',
-      role: UserRole.ADMIN,
-      twoFactorEnabled: true,
-    };
-  }
-  return null;
+export async function setToken(token: string): Promise<void> {
+  const cookieStore = cookies();
+  cookieStore.set(TOKEN_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 // 1 gün
+  });
 }
 
-// Oturum kapatma işlemi
-export async function logout(): Promise<void> {
+export async function removeToken(): Promise<void> {
   const cookieStore = cookies();
-  (await cookieStore).delete('auth_token');
+  cookieStore.delete(TOKEN_NAME);
 } 

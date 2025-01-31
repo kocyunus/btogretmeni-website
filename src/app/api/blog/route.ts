@@ -32,7 +32,7 @@ function getModel() {
 function formatPost(doc: Document): BlogPost {
   const post = doc.toObject();
   return {
-    _id: post._id.toString(),
+    id: post._id.toString(),
     title: post.title,
     description: post.description,
     content: post.content,
@@ -41,7 +41,7 @@ function formatPost(doc: Document): BlogPost {
     coverImage: post.coverImage || DEFAULT_COVER_IMAGE,
     tags: post.tags || [],
     isDraft: post.isDraft || false,
-    publishedAt: new Date(post.publishedAt),
+    publishedAt: new Date(post.publishedAt || new Date()),
     updatedAt: post.updatedAt ? new Date(post.updatedAt) : undefined,
     author: post.author || DEFAULT_AUTHOR,
     sources: post.sources || [],

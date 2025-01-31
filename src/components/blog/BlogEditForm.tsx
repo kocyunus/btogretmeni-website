@@ -22,14 +22,15 @@ export default function BlogEditForm({ id }: Props) {
     description: '',
     content: '',
     excerpt: '',
-    readingTime: 5,
+    readingTime: '5 dakika',
+    coverImage: '',
     tags: [],
     isDraft: true,
     publishedAt: new Date(),
     author: {
-      name: 'Yunus Koç',
-      title: 'BT Öğretmeni',
-      avatarUrl: '/images/avatar.jpg'
+      name: 'BT Öğretmeni',
+      title: 'Bilişim Teknolojileri Öğretmeni',
+      image: '/authors/bt-ogretmeni.jpg'
     },
     sources: []
   });
@@ -92,7 +93,7 @@ export default function BlogEditForm({ id }: Props) {
     if (name === 'tags') {
       updatedPost.tags = value.split(',').map(tag => tag.trim());
     } else if (name === 'readingTime') {
-      updatedPost.readingTime = parseInt(value, 10) || 5;
+      updatedPost.readingTime = value;
     } else {
       (updatedPost as any)[name] = value;
     }
@@ -261,12 +262,11 @@ export default function BlogEditForm({ id }: Props) {
                 Okuma Süresi (dakika)
               </label>
               <input
-                type="number"
+                type="text"
                 id="readingTime"
                 name="readingTime"
                 value={post.readingTime}
                 onChange={handleChange}
-                min={1}
                 className="w-full px-4 py-2 rounded-lg border bg-white dark:bg-gray-800 
                   border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500"
               />

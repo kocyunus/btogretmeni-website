@@ -7,7 +7,7 @@ export interface Source {
 export interface Author {
   name: string;
   title: string;
-  avatarUrl: string;
+  image: string;
 }
 
 export interface SEO {
@@ -23,10 +23,10 @@ export interface BlogPost {
   description: string;
   content: string;
   excerpt: string;
-  readingTime: number;
-  coverImage?: string;
+  readingTime: string;
+  coverImage: string;
   tags: string[];
-  isDraft: boolean;
+  isDraft?: boolean;
   publishedAt: Date;
   updatedAt?: Date;
   author: Author;

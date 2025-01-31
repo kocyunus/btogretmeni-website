@@ -27,12 +27,15 @@ export default function BlogList({ posts }: Props) {
               <div className="mt-auto">
                 <div className="flex items-center justify-between text-sm text-gray-400 mb-3">
                   <div className="flex items-center">
-                    <img 
-                      src={post.author.avatarUrl} 
+                    <img
+                      src={post.author.image}
                       alt={post.author.name}
                       className="w-8 h-8 rounded-full mr-2"
                     />
-                    <span>{post.author.name}</span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{post.author.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{post.author.title}</p>
+                    </div>
                   </div>
                   <span>{post.readingTime} dk okuma</span>
                 </div>

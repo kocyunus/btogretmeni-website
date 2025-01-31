@@ -1,13 +1,58 @@
 import DOMPurify from 'isomorphic-dompurify';
+import { z } from 'zod';
+import { NextRequest } from 'next/server';
+
+// İstek sayısı sınırlaması için Map
+const requestCounts = new Map<string, { count: number; timestamp: number }>();
+
+// İstek limiti ayarları
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 dakika
+const MAX_REQUESTS = 100; // 1 dakikada maksimum istek sayısı
+
+// Blog yazısı şeması
+export const blogPostSchema = z.object({
+  title: z.string().min(3).max(100),
+  description: z.string().min(10).max(200),
+  content: z.string().min(50),
+  excerpt: z.string().min(10).max(200),
+  readingTime: z.string(),
+  coverImage: z.string().url().optional(),
+  tags: z.array(z.string()).min(1),
+  isDraft: z.boolean().optional(),
+  publishedAt: z.date().optional(),
+  author: z.object({
+    name: z.string(),
+    title: z.string(),
+    image: z.string()
+  }),
+  sources: z.array(z.object({
+    title: z.string(),
+    url: z.string().url(),
+    description: z.string().optional()
+  })).optional(),
+  seo: z.object({
+    metaTitle: z.string().optional(),
+    metaDescription: z.string().optional(),
+    keywords: z.string().optional(),
+    canonicalUrl: z.string().url().optional()
+  }).optional()
+});
+
+// Kullanıcı şeması
+export const userSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(100)
+});
 
 // HTML içeriğini temizle
 export function sanitizeHtml(html: string): string {
-  // Middleware'de çalışırken basit bir temizleme yapalım
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // script taglerini kaldır
-    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // iframe taglerini kaldır
-    .replace(/on\w+="[^"]*"/g, '') // onclick vb. event handlerları kaldır
-    .replace(/javascript:/gi, ''); // javascript: protokolünü kaldır
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: [
+      'p', 'br', 'b', 'i', 'em', 'strong', 'a', 'ul', 'ol', 'li',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre'
+    ],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+  });
 }
 
 // Metin içeriğini temizle (HTML olmayan)
@@ -70,19 +115,47 @@ export function isValidPhoneNumber(phone: string): boolean {
   return phoneRegex.test(phone);
 }
 
-// TC Kimlik numarası kontrolü
-export function isValidTCKN(tckn: string): boolean {
-  if (!/^[0-9]{11}$/.test(tckn)) return false;
+// İstek limiti kontrolü
+export function checkRateLimit(request: NextRequest): boolean {
+  const ip = request.ip || 'unknown';
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW;
 
-  const digits = tckn.split('').map(Number);
-  
-  // İlk 9 rakamın toplamının 10. rakam olma kontrolü
-  const sum = digits.slice(0, 9).reduce((acc, curr) => acc + curr, 0);
-  if ((sum % 10) !== digits[9]) return false;
+  // Eski kayıtları temizle
+  Array.from(requestCounts.entries()).forEach(([key, data]) => {
+    if (data.timestamp < windowStart) {
+      requestCounts.delete(key);
+    }
+  });
 
-  // Son kontrolü yap
-  const total = digits.slice(0, 10).reduce((acc, curr) => acc + curr, 0);
-  return (total % 10) === digits[10];
+  // Mevcut istek sayısını kontrol et
+  const currentCount = requestCounts.get(ip);
+  if (!currentCount) {
+    requestCounts.set(ip, { count: 1, timestamp: now });
+    return true;
+  }
+
+  if (currentCount.count >= MAX_REQUESTS) {
+    return false;
+  }
+
+  // İstek sayısını güncelle
+  requestCounts.set(ip, {
+    count: currentCount.count + 1,
+    timestamp: now
+  });
+
+  return true;
+}
+
+// Blog yazısı doğrulama
+export function validateBlogPost(data: unknown) {
+  return blogPostSchema.safeParse(data);
+}
+
+// Kullanıcı doğrulama
+export function validateUser(data: unknown) {
+  return userSchema.safeParse(data);
 }
 
 // Blog yazısı validasyonu
@@ -94,89 +167,71 @@ export interface BlogValidationErrors {
   sources?: string;
 }
 
-export function validateBlogPost(data: any): BlogValidationErrors {
-  const errors: BlogValidationErrors = {};
+export function validateBlogPostData(data: any) {
+  const errors: string[] = [];
 
-  // Başlık kontrolü
-  if (!data.title || typeof data.title !== 'string') {
-    errors.title = 'Başlık gereklidir.';
+  // Zorunlu alanları kontrol et
+  if (!data.title?.trim()) {
+    errors.push('Başlık zorunludur');
   } else if (data.title.length < 3) {
-    errors.title = 'Başlık en az 3 karakter olmalıdır.';
-  } else if (data.title.length > 100) {
-    errors.title = 'Başlık en fazla 100 karakter olmalıdır.';
+    errors.push('Başlık en az 3 karakter olmalıdır');
   }
 
-  // Açıklama kontrolü
-  if (!data.description || typeof data.description !== 'string') {
-    errors.description = 'Açıklama gereklidir.';
+  if (!data.description?.trim()) {
+    errors.push('Açıklama zorunludur');
   } else if (data.description.length < 10) {
-    errors.description = 'Açıklama en az 10 karakter olmalıdır.';
-  } else if (data.description.length > 500) {
-    errors.description = 'Açıklama en fazla 500 karakter olmalıdır.';
+    errors.push('Açıklama en az 10 karakter olmalıdır');
   }
 
-  // İçerik kontrolü
-  if (!data.content || typeof data.content !== 'string') {
-    errors.content = 'İçerik gereklidir.';
+  if (!data.content?.trim()) {
+    errors.push('İçerik zorunludur');
   } else if (data.content.length < 50) {
-    errors.content = 'İçerik en az 50 karakter olmalıdır.';
+    errors.push('İçerik en az 50 karakter olmalıdır');
   }
 
-  // Etiketler kontrolü
-  if (data.tags && (!Array.isArray(data.tags) || !data.tags.every((tag: any) => typeof tag === 'string'))) {
-    errors.tags = 'Etiketler dizi formatında olmalıdır.';
+  if (!data.excerpt?.trim()) {
+    errors.push('Özet zorunludur');
+  } else if (data.excerpt.length < 10) {
+    errors.push('Özet en az 10 karakter olmalıdır');
   }
 
-  // Kaynaklar kontrolü
-  if (data.sources) {
-    if (!Array.isArray(data.sources)) {
-      errors.sources = 'Kaynaklar dizi formatında olmalıdır.';
-    } else {
-      const hasInvalidSource = data.sources.some((source: any) => {
-        return !source.title || !source.url || !isValidUrl(source.url);
-      });
+  if (!data.readingTime?.trim()) {
+    errors.push('Okuma süresi zorunludur');
+  }
 
-      if (hasInvalidSource) {
-        errors.sources = 'Geçersiz kaynak formatı. Her kaynak başlık ve geçerli URL içermelidir.';
-      }
-    }
+  if (!Array.isArray(data.tags) || data.tags.length === 0) {
+    errors.push('En az bir etiket eklemelisiniz');
+  }
+
+  if (!data.author?.name?.trim()) {
+    errors.push('Yazar adı zorunludur');
+  }
+
+  if (!data.author?.title?.trim()) {
+    errors.push('Yazar ünvanı zorunludur');
+  }
+
+  if (!data.author?.image?.trim()) {
+    errors.push('Yazar resmi zorunludur');
   }
 
   return errors;
 }
 
-// Rate limiting için yardımcı fonksiyonlar
-const requestCounts = new Map<string, { count: number; timestamp: number }>();
-
-export function checkRateLimit(ip: string, limit: number, windowMs: number): boolean {
-  const now = Date.now();
-  const windowStart = now - windowMs;
-  
-  // Eski kayıtları temizle
-  for (const [key, data] of requestCounts.entries()) {
-    if (data.timestamp < windowStart) {
-      requestCounts.delete(key);
-    }
-  }
-
-  // Mevcut istek sayısını kontrol et
-  const current = requestCounts.get(ip);
-  if (!current) {
-    requestCounts.set(ip, { count: 1, timestamp: now });
-    return true;
-  }
-
-  if (current.timestamp < windowStart) {
-    // Yeni pencere başlat
-    requestCounts.set(ip, { count: 1, timestamp: now });
-    return true;
-  }
-
-  if (current.count >= limit) {
+// TC Kimlik numarası doğrulama
+export function validateTCKN(tckn: string): boolean {
+  if (!/^[1-9][0-9]{10}$/.test(tckn)) {
     return false;
   }
 
-  // İstek sayısını artır
-  current.count++;
-  return true;
+  const digits = tckn.split('').map(Number);
+  const lastDigit = digits[10];
+
+  // İlk 10 hanenin algoritması
+  let sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += digits[i];
+  }
+
+  return (sum % 10) === lastDigit;
 } 
