@@ -17,6 +17,7 @@ interface Props {
 export default function BlogEditForm({ id }: Props) {
   const router = useRouter();
   const [post, setPost] = useState<BlogFormData>({
+    _id: id,
     title: '',
     description: '',
     content: '',
@@ -24,6 +25,7 @@ export default function BlogEditForm({ id }: Props) {
     readingTime: 5,
     tags: [],
     isDraft: true,
+    publishedAt: new Date(),
     author: {
       name: 'Yunus Koç',
       title: 'BT Öğretmeni',
