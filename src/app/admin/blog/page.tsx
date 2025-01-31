@@ -112,43 +112,32 @@ export default function AdminBlogList() {
         <div className="space-y-6">
           {posts.map((post) => (
             <div
-              key={post._id}
+              key={post.id}
               className="bg-card p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <Link
-                    href={`/admin/blog/edit/${post._id}`}
-                    className="text-xl font-semibold hover:text-primary"
-                  >
-                    {post.title}
-                  </Link>
-                  <p className="text-muted-foreground mt-2">{post.description}</p>
+                  <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">{post.description}</p>
+                  <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span>{new Date(post.publishedAt).toLocaleDateString('tr-TR')}</span>
+                    <span>{post.readingTime} dk okuma</span>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Link
-                    href={`/admin/blog/edit/${post._id}`}
-                    className="text-primary hover:text-primary/80"
+                    href={`/admin/blog/edit/${post.id}`}
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Düzenle
                   </Link>
                   <button
-                    onClick={() => handleDelete(post._id)}
-                    className="text-red-600 hover:text-red-800"
+                    onClick={() => handleDelete(post.id)}
+                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                   >
                     Sil
                   </button>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
-                <time dateTime={post.publishedAt.toISOString()}>
-                  {post.publishedAt.toLocaleDateString('tr-TR')}
-                </time>
-                <span>{post.readingTime} dk okuma</span>
-                <span className={post.isDraft ? 'text-yellow-600' : 'text-green-600'}>
-                  {post.isDraft ? 'Taslak' : 'Yayında'}
-                </span>
               </div>
             </div>
           ))}
