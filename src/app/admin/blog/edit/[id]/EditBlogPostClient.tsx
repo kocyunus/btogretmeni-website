@@ -9,11 +9,11 @@ interface BlogPostFormData {
   description: string;
   content: string;
   excerpt: string;
-  readingTime: string;
+  readingTime: number;
   coverImage: string;
   tags: string[];
   isDraft: boolean;
-  publishedAt: Date;
+  publishedAt: string;
   authorName: string;
   authorTitle: string;
   authorImage: string;
@@ -61,25 +61,32 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
     content: post.content,
     excerpt: post.excerpt,
     readingTime: post.readingTime,
-    coverImage: post.coverImage,
+    coverImage: post.coverImage || '',
     tags: post.tags,
     isDraft: post.isDraft || false,
     publishedAt: post.publishedAt,
     authorName: post.author.name,
-    authorTitle: post.author.title,
-    authorImage: post.author.image
+    authorTitle: post.author.title || '',
+    authorImage: post.author.image || ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'readingTime') {
+      const numValue = parseInt(value);
+      if (!isNaN(numValue)) {
+        setFormData(prev => ({ ...prev, [name]: numValue }));
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setIsSubmitting(true);
-      const response = await fetch(`/api/blog/${post.id}`, {
+      const response = await fetch(`/api/blog/${post._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +96,7 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
           description: formData.description,
           content: formData.content,
           excerpt: formData.excerpt,
-          readingTime: formData.readingTime,
+          readingTime: Number(formData.readingTime),
           coverImage: formData.coverImage,
           tags: formData.tags,
           isDraft: formData.isDraft,
@@ -185,14 +192,15 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
 
       <div>
         <label htmlFor="readingTime" className="block text-sm font-medium text-gray-300">
-          Reading Time
+          Reading Time (minutes)
         </label>
         <input
-          type="text"
+          type="number"
           id="readingTime"
           name="readingTime"
           value={formData.readingTime}
           onChange={handleChange}
+          min="1"
           className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
@@ -249,8 +257,8 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
           type="date"
           id="publishedAt"
           name="publishedAt"
-          value={formData.publishedAt.toISOString().split('T')[0]}
-          onChange={(e) => setFormData(prev => ({ ...prev, publishedAt: new Date(e.target.value) }))}
+          value={formData.publishedAt.split('T')[0]}
+          onChange={(e) => setFormData(prev => ({ ...prev, publishedAt: e.target.value }))}
           className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
         />
@@ -304,17 +312,17 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
       <div className="flex justify-end space-x-4">
         <button
           type="button"
-          onClick={() => router.push('/admin/blog')}
-          className="inline-flex justify-center rounded-md border border-transparent bg-gray-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          onClick={() => router.back()}
+          className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 rounded-md hover:bg-gray-600"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+          className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500 disabled:opacity-50"
         >
-          {isSubmitting ? 'Saving...' : 'Save'}
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
     </form>
