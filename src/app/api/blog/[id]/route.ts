@@ -38,23 +38,24 @@ export async function PUT(
     await connectToDatabase();
     const data = await request.json();
     
-    const updatedPost = await BlogPostModel.findByIdAndUpdate(
+    const post = await BlogPostModel.findByIdAndUpdate(
       params.id,
       {
         ...data,
-        updatedAt: new Date()
+        readingTime: Number(data.readingTime),
+        updatedAt: new Date().toISOString()
       },
-      { new: true, runValidators: true }
+      { new: true }
     );
 
-    if (!updatedPost) {
+    if (!post) {
       return NextResponse.json(
         { error: 'Blog yazısı bulunamadı' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(updatedPost);
+    return NextResponse.json({ success: true, post });
   } catch (error) {
     console.error('Blog yazısı güncellenirken hata:', error);
     return NextResponse.json(

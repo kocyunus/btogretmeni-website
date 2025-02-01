@@ -1,6 +1,6 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 
-const blogPostSchema = new Schema({
+const blogPostSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -23,7 +23,6 @@ const blogPostSchema = new Schema({
   readingTime: {
     type: Number,
     required: true,
-    default: 5,
   },
   publishedAt: {
     type: String,
@@ -48,6 +47,17 @@ const blogPostSchema = new Schema({
     image: {
       type: String,
     },
+  },
+  sources: [{
+    title: String,
+    url: String,
+    description: String,
+  }],
+  seo: {
+    metaTitle: String,
+    metaDescription: String,
+    keywords: String,
+    canonicalUrl: String,
   },
 }, {
   timestamps: true,

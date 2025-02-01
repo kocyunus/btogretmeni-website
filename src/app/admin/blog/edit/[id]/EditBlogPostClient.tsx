@@ -14,7 +14,7 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
     description: post.description,
     content: post.content,
     excerpt: post.excerpt,
-    readingTime: post.readingTime,
+    readingTime: Number(post.readingTime),
     coverImage: post.coverImage,
     tags: post.tags,
     isDraft: post.isDraft || false,
