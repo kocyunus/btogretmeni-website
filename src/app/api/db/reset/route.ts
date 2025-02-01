@@ -11,6 +11,10 @@ export async function GET() {
     await connectToDatabase();
     Logger.db('connect', 'mongodb');
 
+    if (!mongoose.connection.db) {
+      throw new Error('Veritabanı bağlantısı başarısız');
+    }
+
     // Mevcut tüm veritabanlarını listele
     const adminDb = mongoose.connection.db.admin();
     const dbList = await adminDb.listDatabases();
@@ -20,7 +24,7 @@ export async function GET() {
       // Admin ve config veritabanlarını atla
       if (!['admin', 'config', 'local'].includes(db.name)) {
         Logger.debug(`${db.name} veritabanı siliniyor...`);
-        await mongoose.connection.client.db(db.name).dropDatabase();
+        await mongoose.connection.useDb(db.name).dropDatabase();
         Logger.db('drop', `database: ${db.name}`);
       }
     }
@@ -28,7 +32,7 @@ export async function GET() {
     Logger.info('Tüm veritabanları temizlendi');
 
     // Yeni veritabanı yapısını oluştur
-    const btogretmeniDb = mongoose.connection.client.db('btogretmeni');
+    const btogretmeniDb = mongoose.connection.useDb('btogretmeni');
     
     // blogposts koleksiyonunu oluştur
     await btogretmeniDb.createCollection('blogposts');

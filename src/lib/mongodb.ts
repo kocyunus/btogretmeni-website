@@ -1,16 +1,25 @@
 import mongoose from 'mongoose';
 import { Logger } from './logger';
 
+type CachedType = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
+
+declare global {
+  var mongoose: CachedType | undefined;
+}
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error('MONGODB_URI environment variable is not defined');
+  throw new Error('MONGODB_URI is not defined');
 }
 
-let cached = global.mongoose;
+let cached: CachedType = global.mongoose || { conn: null, promise: null };
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+if (!global.mongoose) {
+  global.mongoose = cached;
 }
 
 export async function connectToDatabase() {
@@ -21,11 +30,11 @@ export async function connectToDatabase() {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: true,
+      bufferCommands: false,
     };
 
     Logger.debug('Yeni MongoDB bağlantısı oluşturuluyor');
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => {
       Logger.info('MongoDB bağlantısı başarılı');
       return mongoose;
     });

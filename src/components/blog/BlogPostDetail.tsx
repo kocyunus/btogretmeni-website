@@ -15,13 +15,16 @@ const gradientColors = {
 const BlogHeader = ({ post }: { post: BlogPost }) => (
   <div className={`bg-gradient-to-r ${gradientColors.from} ${gradientColors.to} text-white p-8 rounded-lg mb-8`}>
     <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-    <div className="flex items-center space-x-4">
-      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-        {post.author.name[0]}
-      </div>
+    <div className="flex items-center gap-4">
+      {post.author.image && (
+        <img
+          src={post.author.image}
+          alt={post.author.name}
+          className="w-12 h-12 rounded-full"
+        />
+      )}
       <div>
         <p className="font-medium">{post.author.name}</p>
-        <p className="text-sm opacity-75">{post.author.title}</p>
       </div>
     </div>
   </div>

@@ -12,7 +12,7 @@ export default function BlogList({ posts }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {posts.map((post) => (
-        <Link key={post.id} href={`/blog/${post.id}`}>
+        <Link key={post._id} href={`/blog/${post._id}`}>
           <article className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
             <div className="relative h-48">
               <img 
@@ -27,14 +27,19 @@ export default function BlogList({ posts }: Props) {
               <div className="mt-auto">
                 <div className="flex items-center justify-between text-sm text-gray-400 mb-3">
                   <div className="flex items-center">
-                    <img
-                      src={post.author.image}
-                      alt={post.author.name}
-                      className="w-8 h-8 rounded-full mr-2"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{post.author.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{post.author.title}</p>
+                    <div className="flex-shrink-0">
+                      {post.author.image && (
+                        <img
+                          className="h-10 w-10 rounded-full"
+                          src={post.author.image}
+                          alt={post.author.name}
+                        />
+                      )}
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-200">
+                        {post.author.name}
+                      </p>
                     </div>
                   </div>
                   <span>{post.readingTime} dk okuma</span>

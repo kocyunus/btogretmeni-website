@@ -11,41 +11,49 @@ export function useBlogForm({ onSuccess, initialData }: UseBlogFormProps = {}) {
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState<BlogFormData>({
+    _id: initialData?._id || '',
     title: initialData?.title || '',
     description: initialData?.description || '',
     content: initialData?.content || '',
     excerpt: initialData?.excerpt || '',
-    readingTime: initialData?.readingTime || '5 dakika',
+    readingTime: initialData?.readingTime || 5,
     coverImage: initialData?.coverImage || '',
     tags: initialData?.tags || [],
     isDraft: initialData?.isDraft ?? false,
-    publishedAt: initialData?.publishedAt || new Date(),
+    publishedAt: initialData?.publishedAt || new Date().toISOString(),
     author: initialData?.author || {
-      name: 'BT Öğretmeni',
-      title: 'Bilişim Teknolojileri Öğretmeni',
-      image: '/authors/bt-ogretmeni.jpg'
+      name: 'Yunus Koç',
+      image: '/images/avatar.jpg'
     }
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    const updatedPost = { ...formData };
-    
-    if (name === 'tags') {
-      updatedPost.tags = value.split(',').map(tag => tag.trim());
-    } else if (name === 'readingTime') {
-      updatedPost.readingTime = value;
+    if (name === 'readingTime') {
+      const numValue = parseInt(value);
+      if (!isNaN(numValue)) {
+        setFormData(prev => ({ ...prev, [name]: numValue }));
+      }
+    } else if (name.startsWith('author.')) {
+      const authorField = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        author: { ...prev.author, [authorField]: value }
+      }));
+    } else if (name === 'tags') {
+      setFormData(prev => ({ ...prev, tags: value.split(',').map(tag => tag.trim()) }));
     } else if (name.startsWith('seo.')) {
       const seoField = name.split('.')[1];
-      updatedPost.seo = {
-        ...updatedPost.seo,
-        [seoField]: value
-      };
+      setFormData(prev => ({
+        ...prev,
+        seo: {
+          ...prev.seo,
+          [seoField]: value
+        }
+      }));
     } else {
-      (updatedPost as any)[name] = value;
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
-    
-    setFormData(updatedPost);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

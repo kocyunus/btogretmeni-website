@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import debounce from 'lodash/debounce';
-import type { BlogFormData } from '@/types/blog';
+import type { BlogFormData, BlogPost } from '@/types/blog';
 
 // Varsayılan gradient arka plan renkleri
 const gradientClasses = 'bg-gradient-to-r from-blue-500 to-purple-600';
@@ -16,24 +16,24 @@ interface Props {
 
 export default function BlogEditForm({ id }: Props) {
   const router = useRouter();
-  const [post, setPost] = useState<BlogFormData>({
-    id: id,
+  const initialPost: BlogPost = {
+    _id: '',
     title: '',
     description: '',
     content: '',
     excerpt: '',
-    readingTime: '5 dakika',
+    readingTime: 5,
     coverImage: '',
     tags: [],
     isDraft: true,
-    publishedAt: new Date(),
+    publishedAt: new Date().toISOString(),
     author: {
-      name: 'BT Öğretmeni',
-      title: 'Bilişim Teknolojileri Öğretmeni',
-      image: '/authors/bt-ogretmeni.jpg'
+      name: 'Yunus Koç',
+      image: '/images/avatar.jpg'
     },
     sources: []
-  });
+  };
+  const [post, setPost] = useState<BlogFormData>(initialPost);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -93,7 +93,7 @@ export default function BlogEditForm({ id }: Props) {
     if (name === 'tags') {
       updatedPost.tags = value.split(',').map(tag => tag.trim());
     } else if (name === 'readingTime') {
-      updatedPost.readingTime = value;
+      updatedPost.readingTime = Number(value);
     } else {
       (updatedPost as any)[name] = value;
     }
@@ -265,7 +265,7 @@ export default function BlogEditForm({ id }: Props) {
                 type="text"
                 id="readingTime"
                 name="readingTime"
-                value={post.readingTime}
+                value={post.readingTime.toString()}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-lg border bg-white dark:bg-gray-800 
                   border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500"
