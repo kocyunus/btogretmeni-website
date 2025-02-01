@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { BlogPost } from '@/types/blog';
 
@@ -10,46 +10,16 @@ interface BlogPostFormData {
   content: string;
   excerpt: string;
   readingTime: number;
-  coverImage: string;
-  tags: string[];
-  isDraft: boolean;
-  publishedAt: string;
-  authorName: string;
-  authorTitle: string;
-  authorImage: string;
-}
-
-interface FormData {
-  title: string;
-  description: string;
-  content: string;
-  excerpt: string;
-  readingTime: number;
   coverImage?: string;
   tags: string[];
   isDraft: boolean;
+  publishedAt: string;
   author: {
     name: string;
-    title: string;
-    avatarUrl: string;
+    title?: string;
+    image?: string;
   };
 }
-
-const initialFormData: FormData = {
-  title: '',
-  description: '',
-  content: '',
-  excerpt: '',
-  readingTime: 5,
-  coverImage: '',
-  tags: [],
-  isDraft: true,
-  author: {
-    name: '',
-    title: '',
-    avatarUrl: ''
-  }
-};
 
 export default function EditBlogPostClient({ post }: { post: BlogPost }) {
   const router = useRouter();
@@ -60,14 +30,16 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
     description: post.description,
     content: post.content,
     excerpt: post.excerpt,
-    readingTime: post.readingTime,
-    coverImage: post.coverImage || '',
+    readingTime: Number(post.readingTime),
+    coverImage: post.coverImage,
     tags: post.tags,
     isDraft: post.isDraft || false,
     publishedAt: post.publishedAt,
-    authorName: post.author.name,
-    authorTitle: post.author.title || '',
-    authorImage: post.author.image || ''
+    author: {
+      name: post.author.name,
+      title: '',
+      image: post.author.image
+    }
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -77,6 +49,12 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
       if (!isNaN(numValue)) {
         setFormData(prev => ({ ...prev, [name]: numValue }));
       }
+    } else if (name.startsWith('author.')) {
+      const authorField = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        author: { ...prev.author, [authorField]: value }
+      }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -92,20 +70,8 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-          content: formData.content,
-          excerpt: formData.excerpt,
-          readingTime: Number(formData.readingTime),
-          coverImage: formData.coverImage,
-          tags: formData.tags,
-          isDraft: formData.isDraft,
-          publishedAt: formData.publishedAt,
-          author: {
-            name: formData.authorName,
-            title: formData.authorTitle,
-            image: formData.authorImage
-          }
+          ...formData,
+          readingTime: Number(formData.readingTime)
         }),
       });
 
@@ -265,14 +231,14 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
       </div>
 
       <div>
-        <label htmlFor="authorName" className="block text-sm font-medium text-gray-300">
+        <label htmlFor="author.name" className="block text-sm font-medium text-gray-300">
           Author Name
         </label>
         <input
           type="text"
-          id="authorName"
-          name="authorName"
-          value={formData.authorName}
+          id="author.name"
+          name="author.name"
+          value={formData.author.name}
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
@@ -280,32 +246,30 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
       </div>
 
       <div>
-        <label htmlFor="authorTitle" className="block text-sm font-medium text-gray-300">
+        <label htmlFor="author.title" className="block text-sm font-medium text-gray-300">
           Author Title
         </label>
         <input
           type="text"
-          id="authorTitle"
-          name="authorTitle"
-          value={formData.authorTitle}
+          id="author.title"
+          name="author.title"
+          value={formData.author.title || ''}
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          required
         />
       </div>
 
       <div>
-        <label htmlFor="authorImage" className="block text-sm font-medium text-gray-300">
+        <label htmlFor="author.image" className="block text-sm font-medium text-gray-300">
           Author Image URL
         </label>
         <input
           type="text"
-          id="authorImage"
-          name="authorImage"
-          value={formData.authorImage}
+          id="author.image"
+          name="author.image"
+          value={formData.author.image || ''}
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          required
         />
       </div>
 
