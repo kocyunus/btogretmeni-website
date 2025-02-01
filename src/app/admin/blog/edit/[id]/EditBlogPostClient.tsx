@@ -29,7 +29,7 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
     description: post.description,
     content: post.content,
     excerpt: post.excerpt,
-    readingTime: Number(post.readingTime),
+    readingTime: post.readingTime,
     coverImage: post.coverImage,
     tags: post.tags,
     isDraft: post.isDraft || false,
@@ -67,10 +67,7 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          readingTime: Number(formData.readingTime)
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
