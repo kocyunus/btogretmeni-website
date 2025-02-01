@@ -4,27 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { BlogPost } from '@/types/blog';
 
-interface BlogPostFormData {
-  title: string;
-  description: string;
-  content: string;
-  excerpt: string;
-  readingTime: number;
-  coverImage?: string;
-  tags: string[];
-  isDraft: boolean;
-  publishedAt: string;
-  author: {
-    name: string;
-    image?: string;
-  };
-}
-
 export default function EditBlogPostClient({ post }: { post: BlogPost }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<BlogPostFormData>({
+  const [formData, setFormData] = useState<BlogPost>({
+    _id: post._id,
     title: post.title,
     description: post.description,
     content: post.content,
