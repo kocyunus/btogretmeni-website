@@ -1,46 +1,20 @@
-import React from 'react';
-import { Card as CardStyles } from './styles';
-import clsx from 'clsx';
+import { cn } from '@/lib/utils';
+import { HTMLAttributes } from 'react';
 
-interface CardProps {
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className?: string;
 }
 
-interface CardComposition {
-  Header: React.FC<CardProps>;
-  Body: React.FC<CardProps>;
-  Footer: React.FC<CardProps>;
-}
-
-export const Card: React.FC<CardProps> & CardComposition = ({ children, className }) => {
+export function Card({ className, children, ...props }: CardProps) {
   return (
-    <div className={clsx(CardStyles.container, className)}>
+    <div
+      className={cn(
+        'bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700',
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
-};
-
-Card.Header = function CardHeader({ children, className }) {
-  return (
-    <div className={clsx(CardStyles.header, className)}>
-      {children}
-    </div>
-  );
-};
-
-Card.Body = function CardBody({ children, className }) {
-  return (
-    <div className={clsx(CardStyles.body, className)}>
-      {children}
-    </div>
-  );
-};
-
-Card.Footer = function CardFooter({ children, className }) {
-  return (
-    <div className={clsx(CardStyles.footer, className)}>
-      {children}
-    </div>
-  );
-}; 
+} 

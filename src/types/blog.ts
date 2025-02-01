@@ -18,18 +18,21 @@ export interface SEO {
 }
 
 export interface BlogPost {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   content: string;
   excerpt: string;
-  readingTime: string;
-  coverImage: string;
+  coverImage?: string;
+  readingTime: number;
+  publishedAt: string;
+  updatedAt?: string;
+  isDraft: boolean;
   tags: string[];
-  isDraft?: boolean;
-  publishedAt: Date;
-  updatedAt?: Date;
-  author: Author;
+  author: {
+    name: string;
+    image?: string;
+  };
   sources?: Source[];
   seo?: SEO;
 }

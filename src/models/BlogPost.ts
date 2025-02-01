@@ -1,81 +1,59 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const BlogPostSchema = new mongoose.Schema({
+const blogPostSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   content: {
     type: String,
-    required: true
+    required: true,
   },
   excerpt: {
     type: String,
-    required: true
+    required: true,
+  },
+  coverImage: {
+    type: String,
   },
   readingTime: {
     type: Number,
     required: true,
-    default: 5
+    default: 5,
   },
-  coverImage: {
-    type: String
+  publishedAt: {
+    type: String,
+    required: true,
   },
-  tags: {
-    type: [String],
-    default: []
+  updatedAt: {
+    type: String,
   },
   isDraft: {
     type: Boolean,
-    default: true
+    default: true,
   },
-  publishedAt: {
-    type: Date,
-    required: true
-  },
-  updatedAt: {
-    type: Date
+  tags: {
+    type: [String],
+    default: [],
   },
   author: {
     name: {
       type: String,
-      required: true
+      required: true,
     },
-    title: {
+    image: {
       type: String,
-      required: true
     },
-    avatarUrl: {
-      type: String,
-      required: true
-    }
   },
-  sources: [{
-    title: {
-      type: String,
-      required: true
-    },
-    url: {
-      type: String,
-      required: true
-    },
-    description: String
-  }],
-  seo: {
-    metaTitle: String,
-    metaDescription: String,
-    keywords: String,
-    canonicalUrl: String
-  }
 }, {
-  timestamps: true // Bu otomatik olarak createdAt ve updatedAt alanlarını ekler
+  timestamps: true,
 });
 
-// Mongoose modelini oluştur veya var olanı kullan
-const BlogPost = mongoose.models.BlogPost || mongoose.model('BlogPost', BlogPostSchema);
+// Eğer model zaten varsa onu kullan, yoksa yeni model oluştur
+const BlogPostModel = mongoose.models.BlogPost || mongoose.model('BlogPost', blogPostSchema);
 
-export default BlogPost; 
+export default BlogPostModel; 

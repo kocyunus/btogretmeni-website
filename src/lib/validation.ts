@@ -9,40 +9,119 @@ const requestCounts = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 dakika
 const MAX_REQUESTS = 100; // 1 dakikada maksimum istek sayısı
 
-// Blog yazısı şeması
-export const blogPostSchema = z.object({
-  title: z.string().min(3).max(100),
-  description: z.string().min(10).max(200),
-  content: z.string().min(50),
-  excerpt: z.string().min(10).max(200),
-  readingTime: z.string(),
-  coverImage: z.string().url().optional(),
-  tags: z.array(z.string()).min(1),
-  isDraft: z.boolean().optional(),
-  publishedAt: z.date().optional(),
-  author: z.object({
-    name: z.string(),
-    title: z.string(),
-    image: z.string()
+// Blog validasyonları
+export const blogValidation = {
+  schema: z.object({
+    title: z.string().min(3).max(100),
+    description: z.string().min(10).max(200),
+    content: z.string().min(50),
+    excerpt: z.string().min(10).max(200),
+    readingTime: z.string(),
+    coverImage: z.string().url().optional(),
+    tags: z.array(z.string()).min(1),
+    isDraft: z.boolean().optional(),
+    publishedAt: z.date().optional(),
+    author: z.object({
+      name: z.string(),
+      title: z.string(),
+      image: z.string()
+    })
   }),
-  sources: z.array(z.object({
-    title: z.string(),
-    url: z.string().url(),
-    description: z.string().optional()
-  })).optional(),
-  seo: z.object({
-    metaTitle: z.string().optional(),
-    metaDescription: z.string().optional(),
-    keywords: z.string().optional(),
-    canonicalUrl: z.string().url().optional()
-  }).optional()
-});
 
-// Kullanıcı şeması
-export const userSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8).max(100)
-});
+  validatePost: (data: unknown) => {
+    return blogValidation.schema.safeParse(data);
+  }
+};
+
+// Kullanıcı validasyonları
+export const userValidation = {
+  schema: z.object({
+    email: z.string().email(),
+    password: z.string().min(8).max(100)
+  }),
+
+  validateUser: (data: unknown) => {
+    return userValidation.schema.safeParse(data);
+  },
+
+  isValidEmail: (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  },
+
+  isValidUsername: (username: string): boolean => {
+    const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+    return usernameRegex.test(username);
+  },
+
+  isStrongPassword: (password: string): boolean => {
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^A-Za-z0-9]/.test(password)
+    );
+  }
+};
+
+// Güvenlik validasyonları
+export const securityValidation = {
+  sanitizeHtml: (html: string): string => {
+    return DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'b', 'i', 'em', 'strong', 'a', 'ul', 'ol', 'li',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre'
+      ],
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+    });
+  },
+
+  sanitizeText: (text: string): string => {
+    return text.trim().replace(/[<>]/g, '');
+  },
+
+  isValidUrl: (url: string): boolean => {
+    try {
+      const parsedUrl = new URL(url);
+      return ['http:', 'https:'].includes(parsedUrl.protocol);
+    } catch {
+      return false;
+    }
+  },
+
+  validateTCKN: (tckn: string): boolean => {
+    if (!/^[1-9][0-9]{10}$/.test(tckn)) {
+      return false;
+    }
+    const digits = tckn.split('').map(Number);
+    const lastDigit = digits[10];
+    let sum = 0;
+    for (let i = 0; i < 10; i++) {
+      sum += digits[i];
+    }
+    return (sum % 10) === lastDigit;
+  }
+};
+
+// Dosya validasyonları
+export const fileValidation = {
+  isValidFileSize: (size: number, maxSize: number): boolean => {
+    return size <= maxSize;
+  },
+
+  isValidFileType: (type: string, allowedTypes: string[]): boolean => {
+    return allowedTypes.includes(type);
+  }
+};
+
+// Tarih validasyonları
+export const dateValidation = {
+  isValidDate: (date: string): boolean => {
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate.getTime());
+  }
+};
 
 // HTML içeriğini temizle
 export function sanitizeHtml(html: string): string {
@@ -148,16 +227,6 @@ export function checkRateLimit(request: NextRequest): boolean {
   return true;
 }
 
-// Blog yazısı doğrulama
-export function validateBlogPost(data: unknown) {
-  return blogPostSchema.safeParse(data);
-}
-
-// Kullanıcı doğrulama
-export function validateUser(data: unknown) {
-  return userSchema.safeParse(data);
-}
-
 // Blog yazısı validasyonu
 export interface BlogValidationErrors {
   title?: string;
@@ -216,22 +285,4 @@ export function validateBlogPostData(data: any) {
   }
 
   return errors;
-}
-
-// TC Kimlik numarası doğrulama
-export function validateTCKN(tckn: string): boolean {
-  if (!/^[1-9][0-9]{10}$/.test(tckn)) {
-    return false;
-  }
-
-  const digits = tckn.split('').map(Number);
-  const lastDigit = digits[10];
-
-  // İlk 10 hanenin algoritması
-  let sum = 0;
-  for (let i = 0; i < 10; i++) {
-    sum += digits[i];
-  }
-
-  return (sum % 10) === lastDigit;
 } 

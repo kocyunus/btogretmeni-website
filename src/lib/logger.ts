@@ -1,93 +1,86 @@
-enum LogLevel {
-  INFO = 'INFO',
-  WARN = 'WARN',
-  ERROR = 'ERROR',
-  DEBUG = 'DEBUG'
-}
+type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
-interface LogEntry {
-  timestamp: string;
+interface LogMessage {
   level: LogLevel;
   message: string;
-  component?: string;
-  details?: any;
+  timestamp: string;
+  data?: any;
 }
 
-class Logger {
-  private static instance: Logger;
-  private logs: LogEntry[] = [];
-  private isDebugMode: boolean = process.env.NODE_ENV === 'development';
-
-  private constructor() {}
-
-  static getInstance(): Logger {
-    if (!Logger.instance) {
-      Logger.instance = new Logger();
-    }
-    return Logger.instance;
+export class Logger {
+  private static formatTime(): string {
+    return new Date().toLocaleTimeString('tr-TR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      fractionalSecondDigits: 3
+    });
   }
 
-  private formatTime(): string {
-    return new Date().toISOString();
-  }
-
-  private log(level: LogLevel, message: string, component?: string, details?: any) {
-    const entry: LogEntry = {
-      timestamp: this.formatTime(),
+  private static formatMessage(level: LogLevel, message: string, data?: any): LogMessage {
+    return {
       level,
       message,
-      component,
-      details
+      timestamp: this.formatTime(),
+      data
+    };
+  }
+
+  private static log(level: LogLevel, message: string, data?: any) {
+    const logMessage = this.formatMessage(level, message, data);
+    
+    const styles = {
+      info: 'color: #3b82f6; font-weight: bold;',  // mavi
+      warn: 'color: #f59e0b; font-weight: bold;',  // turuncu
+      error: 'color: #ef4444; font-weight: bold;', // kırmızı
+      debug: 'color: #10b981; font-weight: bold;'  // yeşil
     };
 
-    this.logs.push(entry);
-    
-    if (this.isDebugMode) {
-      const componentStr = component ? `[${component}]` : '';
-      const detailsStr = details ? `\nDetails: ${JSON.stringify(details, null, 2)}` : '';
-      
-      switch (level) {
-        case LogLevel.INFO:
-          console.log(`🔵 ${componentStr} ${message}${detailsStr}`);
-          break;
-        case LogLevel.WARN:
-          console.warn(`🟡 ${componentStr} ${message}${detailsStr}`);
-          break;
-        case LogLevel.ERROR:
-          console.error(`🔴 ${componentStr} ${message}${detailsStr}`);
-          break;
-        case LogLevel.DEBUG:
-          console.debug(`⚪ ${componentStr} ${message}${detailsStr}`);
-          break;
-      }
+    console.log(
+      `%c[${logMessage.level.toUpperCase()}] ${logMessage.timestamp}:%c ${logMessage.message}`,
+      styles[level],
+      'color: inherit'
+    );
+
+    if (data) {
+      console.log('📦 Veri:', data);
     }
   }
 
-  info(message: string, component?: string, details?: any) {
-    this.log(LogLevel.INFO, message, component, details);
+  static info(message: string, data?: any) {
+    this.log('info', message, data);
   }
 
-  warn(message: string, component?: string, details?: any) {
-    this.log(LogLevel.WARN, message, component, details);
+  static warn(message: string, data?: any) {
+    this.log('warn', message, data);
   }
 
-  error(message: string, component?: string, details?: any) {
-    this.log(LogLevel.ERROR, message, component, details);
+  static error(message: string, data?: any) {
+    this.log('error', message, data);
   }
 
-  debug(message: string, component?: string, details?: any) {
-    if (this.isDebugMode) {
-      this.log(LogLevel.DEBUG, message, component, details);
+  static debug(message: string, data?: any) {
+    if (process.env.NODE_ENV === 'development') {
+      this.log('debug', message, data);
     }
   }
 
-  getLogs(): LogEntry[] {
-    return [...this.logs];
+  static api(method: string, url: string, status?: number, data?: any) {
+    const statusText = status ? `[${status}]` : '';
+    this.log(
+      status && status >= 400 ? 'error' : 'info',
+      `📡 API ${method} ${url} ${statusText}`,
+      data
+    );
   }
 
-  clearLogs() {
-    this.logs = [];
+  static db(operation: string, collection: string, result?: any) {
+    this.log(
+      'debug',
+      `🗄️ DB ${operation} ${collection}`,
+      result
+    );
   }
 }
 
-export const logger = Logger.getInstance(); 
+export default Logger; 

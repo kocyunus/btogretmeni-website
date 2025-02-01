@@ -10,22 +10,22 @@ interface Props {
 
 export default function BlogCard({ post }: Props) {
   return (
-    <Link href={`/blog/${post.id}`}>
-      <article className="bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
-        <div className="relative h-48 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <h2 className="text-xl font-bold text-white text-center line-clamp-2">
+    <Link href={`/blog/${post._id}`} className="block h-full">
+      <article className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:scale-[1.02] hover:bg-gray-800">
+        <div className="relative h-52 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+          <div className="absolute inset-0 flex items-center justify-center p-6">
+            <h2 className="text-2xl font-bold text-white text-center line-clamp-2">
               {post.title}
             </h2>
           </div>
         </div>
         
-        <div className="p-6 flex-1 flex flex-col">
-          <p className="text-gray-300 mb-4 line-clamp-3 flex-1">
+        <div className="p-8 flex-1 flex flex-col">
+          <p className="text-gray-300 mb-6 line-clamp-3 flex-1 text-lg">
             {post.description}
           </p>
           <div className="mt-auto">
-            <div className="flex items-center justify-between text-sm text-gray-400 mb-3">
+            <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
               <span>{new Date(post.publishedAt).toLocaleDateString('tr-TR')}</span>
               <span>{post.readingTime} dk okuma</span>
             </div>
@@ -34,7 +34,7 @@ export default function BlogCard({ post }: Props) {
                 {post.tags.map((tag: string) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded"
+                    className="px-3 py-1.5 text-sm bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-700"
                   >
                     {tag}
                   </span>

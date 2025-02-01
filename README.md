@@ -4,19 +4,29 @@ Kisisel blog ve egitim platformu.
 
 ## Ozellikler
 
-- Blog yazilari
-- Egitim icerikleri
-- Proje portfoyu
-- Analytics entegrasyonu
-- SEO optimizasyonu
+- 📝 Blog yazilari
+  - Modern kart tasarımı
+  - Responsive grid layout
+  - Etiket sistemi
+  - Okuma süresi hesaplama
+- 🎓 Egitim icerikleri
+- 💼 Proje portfoyu
+- 📊 Analytics entegrasyonu
+- 🔍 SEO optimizasyonu
+- 🌙 Karanlık/Aydınlık tema
+- 🌐 Responsive tasarım
+- ⚡ Modern UI/UX
 
 ## Teknolojiler
 
 - Next.js 14
-- React
+- React 18
 - TypeScript
 - Tailwind CSS
-- Firebase Analytics
+- MongoDB
+- Next-themes
+- React-icons
+- Mongoose
 - Vercel Deployment
 
 ## Baslangic
@@ -26,21 +36,43 @@ Kisisel blog ve egitim platformu.
 npm install
 ```
 
-2. Gelistirme sunucusunu baslatın:
+2. MongoDB URI'yi ayarlayın:
+```bash
+# .env.local dosyasında
+MONGODB_URI=your_mongodb_uri
+```
+
+3. Gelistirme sunucusunu baslatın:
 ```bash
 npm run dev
 ```
 
-3. Tarayicinizda acin:
+4. Tarayicinizda acin:
 ```
 http://localhost:3000
 ```
 
-## Firebase Yapilandirmasi
+## Veritabanı Yapısı
 
-1. `.env.local` dosyasi olusturun
-2. Firebase yapilandirma bilgilerini ekleyin
-3. Analytics'i aktif edin
+### MongoDB Koleksiyonları
+
+- `blogposts`: Blog yazıları
+  - title: String
+  - description: String
+  - content: String
+  - tags: [String]
+  - publishedAt: Date
+  - readingTime: Number
+
+## API Endpoints
+
+### Blog API
+
+- `GET /api/blog`: Tüm blog yazılarını getirir
+- `GET /api/blog/:id`: Belirli bir blog yazısını getirir
+- `POST /api/blog`: Yeni blog yazısı oluşturur
+- `PUT /api/blog/:id`: Blog yazısını günceller
+- `DELETE /api/blog/:id`: Blog yazısını siler
 
 ## Katki
 

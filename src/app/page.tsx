@@ -1,35 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
-import { analytics, logEvent, app } from '@/lib/firebase';
 import Link from 'next/link'
 import { EducationIcon, ProjectIcon, BlogIcon, EmailIcon } from '@/components/icons/HomeIcons'
 
 export default function Home() {
-  useEffect(() => {
-    // Firebase kurulum kontrolu
-    if (app) {
-      console.log('Firebase basariyla kuruldu:', app.name);
-    } else {
-      console.log('Firebase kurulumu basarisiz!');
-    }
-
-    // Analytics kontrolu
-    if (analytics) {
-      console.log('Analytics basariyla kuruldu');
-      
-      // Test event'i gonder
-      logEvent(analytics, 'home_page_view', {
-        page: 'Ana Sayfa',
-        timestamp: new Date().toISOString()
-      });
-      
-      console.log('Test event gonderildi');
-    } else {
-      console.log('Analytics kurulumu basarisiz!');
-    }
-  }, []);
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="container mx-auto px-4 py-16">

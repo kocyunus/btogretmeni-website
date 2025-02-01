@@ -5,6 +5,7 @@ const nextConfig = {
   swcMinify: true,
   experimental: {
     optimizeCss: true,
+    optimizeServerReact: true
   },
   images: {
     domains: ['dummyimage.com'],
@@ -12,7 +13,6 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   webpack: (config, { isServer }) => {
-    // Cheerio için özel kural
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -26,17 +26,7 @@ const nextConfig = {
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
-    config.watchOptions = {
-      poll: 1000,
-      aggregateTimeout: 300,
-      ignored: [
-        '**/node_modules/**',
-        '**/.git/**',
-        '**/.next/**',
-        '**/dist/**',
-        '**/build/**'
-      ]
-    }
+
     return config;
   },
   compiler: {
@@ -45,7 +35,11 @@ const nextConfig = {
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
-  }
+  },
+  poweredByHeader: false,
+  generateEtags: true,
+  compress: true,
+  productionBrowserSourceMaps: false,
 };
 
 module.exports = nextConfig; 

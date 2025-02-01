@@ -1,41 +1,32 @@
 import mongoose from 'mongoose';
+import { Logger } from './logger';
 
-interface GlobalMongoose {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
-}
-
-declare global {
-  var mongoose: GlobalMongoose | undefined;
-}
-
-// Client tarafında NEXT_PUBLIC_ ile başlayan değişkeni, server tarafında normal değişkeni kullan
-const MONGODB_URI = typeof window === 'undefined' 
-  ? process.env.MONGODB_URI 
-  : process.env.NEXT_PUBLIC_MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error('MongoDB bağlantı bilgisi eksik. Lütfen .env dosyasını kontrol edin.');
+  throw new Error('MONGODB_URI environment variable is not defined');
 }
 
-const cached: GlobalMongoose = global.mongoose || { conn: null, promise: null };
+let cached = global.mongoose;
 
-if (!global.mongoose) {
-  global.mongoose = cached;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
 export async function connectToDatabase() {
   if (cached.conn) {
+    Logger.debug('Mevcut MongoDB bağlantısı kullanılıyor');
     return cached.conn;
   }
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => {
-      console.log('MongoDB bağlantısı başarılı');
+    Logger.debug('Yeni MongoDB bağlantısı oluşturuluyor');
+    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      Logger.info('MongoDB bağlantısı başarılı');
       return mongoose;
     });
   }
@@ -43,11 +34,25 @@ export async function connectToDatabase() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
+    Logger.error('MongoDB bağlantısı başarısız', e);
     cached.promise = null;
     throw e;
   }
 
   return cached.conn;
+}
+
+export async function disconnectFromDatabase() {
+  try {
+    if (cached.conn) {
+      await mongoose.disconnect();
+      cached.conn = null;
+      console.log('MongoDB bağlantısı kapatıldı');
+    }
+  } catch (error) {
+    console.error('MongoDB bağlantısı kapatılırken hata:', error);
+    throw error;
+  }
 }
 
 export default connectToDatabase; 

@@ -5,6 +5,8 @@ import { Document } from 'mongoose';
 import BlogPostModel from '@/models/BlogPost';
 import type { BlogPost, SEO } from '@/types/blog';
 import { createBlogPost, getBlogPosts } from '@/lib/blog';
+import Logger from '@/lib/logger';
+import mongoose from 'mongoose';
 
 // Varsayılan gradient arka plan URL'si
 const DEFAULT_COVER_IMAGE = `https://dummyimage.com/1200x630/4F46E5/ffffff.png&text=${encodeURIComponent('BT Öğretmeni')}`;
@@ -52,14 +54,29 @@ function formatPost(doc: Document): BlogPost {
 // Blog yazılarını getir
 export async function GET() {
   try {
+    Logger.api('GET', '/api/blog');
+    
     await connectToDatabase();
-    const model = getModel();
-    const posts = await model.find().sort({ publishedAt: -1 });
-    return NextResponse.json(posts.map(formatPost));
+    Logger.db('connect', 'mongodb');
+
+    const posts = await BlogPostModel.find()
+      .sort({ publishedAt: -1 })
+      .lean();
+
+    Logger.info(`${posts.length} blog yazısı yüklendi`);
+
+    return NextResponse.json({ 
+      success: true,
+      posts: posts 
+    });
+
   } catch (error) {
-    console.error('Blog yazıları alınırken hata:', error);
+    Logger.error('Blog yazıları getirilirken hata oluştu', error);
     return NextResponse.json(
-      { error: 'Blog yazıları alınamadı' },
+      { 
+        success: false, 
+        error: 'Blog yazıları getirilirken bir hata oluştu' 
+      },
       { status: 500 }
     );
   }
@@ -68,35 +85,33 @@ export async function GET() {
 // Yeni blog yazısı oluştur
 export async function POST(request: Request) {
   try {
+    Logger.api('POST', '/api/blog');
+    
     await connectToDatabase();
-    const model = getModel();
     const data = await request.json();
-    
-    // Zorunlu alanları kontrol et
-    const requiredFields = ['title', 'description', 'content', 'excerpt'];
-    const missingFields = requiredFields.filter(field => !data[field]);
-    
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { error: `Eksik alanlar: ${missingFields.join(', ')}` },
-        { status: 400 }
-      );
-    }
 
-    const newPost = await model.create({
+    const post = new BlogPostModel({
       ...data,
       publishedAt: new Date(),
-      updatedAt: new Date(),
-      author: data.author || DEFAULT_AUTHOR,
-      tags: data.tags || [],
-      isDraft: data.isDraft ?? true
     });
 
-    return NextResponse.json(formatPost(newPost));
+    await post.save();
+    Logger.info('Yeni blog yazısı oluşturuldu');
+
+    return NextResponse.json({ 
+      success: true, 
+      post 
+    });
+
   } catch (error) {
-    console.error('Blog yazısı oluşturulurken hata:', error);
-    const message = error instanceof Error ? error.message : 'Blog yazısı oluşturulamadı';
-    return NextResponse.json({ error: message }, { status: 400 });
+    Logger.error('Blog yazısı oluşturulurken hata oluştu', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Blog yazısı oluşturulurken bir hata oluştu' 
+      },
+      { status: 500 }
+    );
   }
 }
 

@@ -9,9 +9,10 @@ Bu dokümantasyon, blog sisteminin genel yapısını, kurulumunu ve kullanımın
 3. [Başlangıç](#başlangıç)
 4. [Sistem Mimarisi](#sistem-mimarisi)
 5. [Modüler Yapı](#modüler-yapı)
-6. [Güvenlik](#güvenlik)
-7. [Bakım ve İzleme](#bakım-ve-izleme)
-8. [Katkıda Bulunma](#katkıda-bulunma)
+6. [Arayüz Bileşenleri](#arayüz-bileşenleri)
+7. [Güvenlik](#güvenlik)
+8. [Bakım ve İzleme](#bakım-ve-izleme)
+9. [Katkıda Bulunma](#katkıda-bulunma)
 
 ## Genel Bakış
 
@@ -27,6 +28,10 @@ Blog sistemi, modern web teknolojileri kullanılarak geliştirilmiş, ölçeklen
 - 🔒 Güvenli yetkilendirme
 - 📈 Performans optimizasyonları
 - 🌐 Çoklu dil desteği
+- 🎨 Modern ve etkileşimli UI tasarımı
+- 📱 Responsive grid layout
+- 🌙 Karanlık/Aydınlık tema desteği
+- ⚡ Sayfa geçişlerinde yükleme animasyonları
 
 ## Teknoloji Yığını
 
@@ -163,6 +168,33 @@ Blog sistemi, bağımsız modüller halinde tasarlanmıştır:
    - Dosya yükleme
    - Resim optimizasyonu
    - Medya yönetimi
+
+## Arayüz Bileşenleri
+
+### Blog Kartları
+
+Blog kartları, yazıları görsel olarak çekici bir şekilde sunar:
+
+- Gradient arka planlı başlık alanı
+- Yarı saydam ve bulanık arka plan efekti
+- Hover animasyonları
+- Responsive grid düzeni (1/2/3 kolonlu)
+- Etiket gösterimi
+- Okuma süresi ve tarih bilgisi
+
+### Tema Değiştirici
+
+- Sistem temasını otomatik algılama
+- Karanlık/Aydınlık tema geçişi
+- Animasyonlu geçişler
+- Tema tercihi saklama
+
+### Navigasyon
+
+- Responsive tasarım
+- Aktif sayfa vurgusu
+- Smooth scroll
+- Mobil menü desteği
 
 ## Güvenlik
 
