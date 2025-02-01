@@ -16,7 +16,6 @@ interface BlogPostFormData {
   publishedAt: string;
   author: {
     name: string;
-    title?: string;
     image?: string;
   };
 }
@@ -37,7 +36,6 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
     publishedAt: post.publishedAt,
     author: {
       name: post.author.name,
-      title: '',
       image: post.author.image
     }
   });
@@ -242,20 +240,6 @@ export default function EditBlogPostClient({ post }: { post: BlogPost }) {
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           required
-        />
-      </div>
-
-      <div>
-        <label htmlFor="author.title" className="block text-sm font-medium text-gray-300">
-          Author Title
-        </label>
-        <input
-          type="text"
-          id="author.title"
-          name="author.title"
-          value={formData.author.title || ''}
-          onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
       </div>
 
