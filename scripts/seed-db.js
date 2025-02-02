@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { nanoid } = require('nanoid');
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const SKIP_DB_RESET = process.env.SKIP_DB_RESET === 'true';
 
 if (!MONGODB_URI) {
   throw new Error('MONGODB_URI ortam değişkeni tanımlanmamış.');
@@ -196,13 +197,20 @@ async function seedDatabase() {
     await mongoose.connect(MONGODB_URI);
     console.log('MongoDB bağlantısı başarılı');
 
-    // Mevcut blog yazılarını temizle
-    await BlogPost.deleteMany({});
-    console.log('Mevcut blog yazıları temizlendi');
+    if (SKIP_DB_RESET) {
+      console.log('Veritabanı sıfırlama atlanıyor (SKIP_DB_RESET=true)');
+      await mongoose.connection.close();
+      return;
+    }
 
-    // Yeni blog yazılarını ekle
-    await BlogPost.insertMany(testPosts);
-    console.log('Yeni blog yazıları eklendi');
+    // Örnek yazıları ekle (eğer yoksa)
+    for (const testPost of testPosts) {
+      const existingPost = await BlogPost.findOne({ title: testPost.title });
+      if (!existingPost) {
+        await BlogPost.create(testPost);
+        console.log(`Yeni blog yazısı eklendi: ${testPost.title}`);
+      }
+    }
 
     // Bağlantıyı kapat
     await mongoose.connection.close();

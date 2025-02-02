@@ -7,6 +7,9 @@ const nextConfig = {
     optimizeCss: true,
     optimizeServerReact: true
   },
+  env: {
+    SKIP_DB_RESET: process.env.SKIP_DB_RESET || 'true'
+  },
   images: {
     domains: ['dummyimage.com'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
