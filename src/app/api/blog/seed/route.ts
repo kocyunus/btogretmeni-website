@@ -48,18 +48,24 @@ export async function GET() {
     await connectToDatabase();
     Logger.db('connect', 'mongodb');
 
-    // Önce koleksiyonu temizle
-    await BlogPostModel.deleteMany({});
-    Logger.db('clear', 'blogposts');
-
+    let addedCount = 0;
+    
     // Örnek yazıları ekle
-    const posts = await BlogPostModel.create(samplePosts);
-    Logger.db('seed', 'blogposts', { count: posts.length });
+    for (const samplePost of samplePosts) {
+      // Aynı başlıkla yazı var mı kontrol et
+      const existingPost = await BlogPostModel.findOne({ title: samplePost.title });
+      
+      if (!existingPost) {
+        const post = await BlogPostModel.create(samplePost);
+        addedCount++;
+        Logger.info(`Örnek blog yazısı eklendi: ${post.title}`);
+      }
+    }
 
-    Logger.info(`${posts.length} adet örnek blog yazısı oluşturuldu`);
+    Logger.info(`${addedCount} adet örnek blog yazısı oluşturuldu`);
     return NextResponse.json({ 
-      message: 'Örnek blog yazıları oluşturuldu',
-      posts
+      message: `${addedCount} adet örnek blog yazısı oluşturuldu`,
+      success: true
     });
 
   } catch (error) {

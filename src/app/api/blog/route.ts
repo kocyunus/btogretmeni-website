@@ -121,21 +121,23 @@ export async function DELETE(request: Request) {
     const url = new URL(request.url);
     const id = url.pathname.split('/').pop();
 
-    if (id && id !== 'blog') {
-      const deletedPost = await getModel().findByIdAndDelete(id);
-      if (!deletedPost) {
-        return new Response('Blog yazısı bulunamadı', { status: 404 });
-      }
-      return new Response(JSON.stringify(deletedPost), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
+    if (!id || id === 'blog') {
+      return new Response('Geçersiz blog yazısı ID', { status: 400 });
     }
 
-    await getModel().deleteMany({});
-    return new Response('Tüm blog yazıları silindi', { status: 200 });
+    const deletedPost = await getModel().findByIdAndDelete(id);
+    if (!deletedPost) {
+      return new Response('Blog yazısı bulunamadı', { status: 404 });
+    }
+
+    Logger.info(`Blog yazısı silindi: ${deletedPost.title}`);
+    return new Response(JSON.stringify(deletedPost), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
   } catch (error) {
-    console.error('Blog yazısı silinirken hata:', error);
+    Logger.error('Blog yazısı silinirken hata:', error);
     return new Response('Blog yazısı silinemedi', { status: 500 });
   }
 } 

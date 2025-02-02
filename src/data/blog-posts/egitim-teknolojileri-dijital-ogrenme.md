@@ -2,7 +2,7 @@
 title: "Eğitim Teknolojileri: Dijital Öğrenme Platformları ve Öğrenci Takip Sistemleri"
 description: "Bu yazıda, dijital öğrenme platformları, öğrenci takip sistemleri ve eğitim teknolojilerinin dijital dönüşümdeki rolünü detaylı örnekler ve adım adım yönergelerle keşfedeceksiniz."
 excerpt: "Dijital öğrenme platformları ve öğrenci takip sistemlerinin temel kavramlarını, avantajlarını ve uygulama örneklerini detaylı bir şekilde keşfedin; eğitimde dijital dönüşümün yollarını öğrenin."
-publishedAt: "2025-02-02"
+publishedAt: "2024-02-02"
 readingTime: 20
 author:
   name: "Yunus Koç"

@@ -17,9 +17,8 @@ export async function POST() {
     const postsDirectory = path.join(process.cwd(), 'src/data/blog-posts');
     const files = await fs.readdir(postsDirectory);
     
-    // Mevcut yazıları temizle
-    await BlogPostModel.deleteMany({});
-    Logger.info('Mevcut blog yazıları temizlendi');
+    let importedCount = 0;
+    let updatedCount = 0;
     
     // Her markdown dosyasını işle
     for (const file of files) {
@@ -31,27 +30,49 @@ export async function POST() {
       // Frontmatter ve içeriği ayır
       const { data, content } = matter(fileContent);
       
-      // Blog yazısını oluştur
-      const post = new BlogPostModel({
-        title: data.title,
-        description: data.description,
-        content: content,
-        excerpt: data.excerpt,
-        readingTime: data.readingTime,
-        tags: data.tags,
-        isDraft: data.isDraft,
-        publishedAt: new Date(data.publishedAt),
-        author: data.author,
-        coverImage: data.coverImage
-      });
+      // Önce bu başlıkla bir yazı var mı kontrol et
+      const existingPost = await BlogPostModel.findOne({ title: data.title });
       
-      await post.save();
-      Logger.info(`Blog yazısı eklendi: ${data.title}`);
+      if (existingPost) {
+        // Varsa güncelle
+        await BlogPostModel.findByIdAndUpdate(existingPost._id, {
+          description: data.description,
+          content: content,
+          excerpt: data.excerpt,
+          readingTime: data.readingTime,
+          tags: data.tags,
+          isDraft: data.isDraft,
+          publishedAt: new Date(data.publishedAt),
+          author: data.author,
+          coverImage: data.coverImage,
+          updatedAt: new Date()
+        });
+        updatedCount++;
+        Logger.info(`Blog yazısı güncellendi: ${data.title}`);
+      } else {
+        // Yoksa yeni ekle
+        const post = new BlogPostModel({
+          title: data.title,
+          description: data.description,
+          content: content,
+          excerpt: data.excerpt,
+          readingTime: data.readingTime,
+          tags: data.tags,
+          isDraft: data.isDraft,
+          publishedAt: new Date(data.publishedAt),
+          author: data.author,
+          coverImage: data.coverImage
+        });
+        
+        await post.save();
+        importedCount++;
+        Logger.info(`Yeni blog yazısı eklendi: ${data.title}`);
+      }
     }
     
     return NextResponse.json({ 
       success: true,
-      message: 'Blog yazıları başarıyla import edildi'
+      message: `Blog yazıları başarıyla işlendi. ${importedCount} yeni yazı eklendi, ${updatedCount} yazı güncellendi.`
     });
     
   } catch (error) {
