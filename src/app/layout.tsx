@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
 import Navbar from '@/components/Navbar';
+import ThemeProvider from '@/components/ThemeProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'BT Öğretmeni',
-  description: 'Bilişim Teknolojileri Öğretmeni Kişisel Blog',
+  description: 'Bilişim Teknolojileri Öğretmeni Kişisel Web Sitesi',
 };
 
 export default function RootLayout({
@@ -19,16 +19,11 @@ export default function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider>
           <Navbar />
-          <div className="pt-16">
+          <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
             {children}
-          </div>
+          </main>
         </ThemeProvider>
       </body>
     </html>

@@ -21,7 +21,7 @@ const defaultAuthor = {
 1. MongoDB şemasında (src/models/BlogPost.ts)
 2. API route'larında (src/app/api/blog/route.ts)
 3. Blog yazısı oluşturma sayfasında (src/app/admin/blog/new/page.tsx)
-4. Blog detay sayfasında (src/app/blog/[id]/page.tsx)
+4. Blog detay sayfasında (src/app/blog/[slug]/page.tsx)
 
 ## 2. Route Parametreleri
 
@@ -127,9 +127,9 @@ Dinamik route'lar için klasör isimlendirmesi:
 
 ```
 ✅ Doğru:
-/blog/[id]
-/users/[id]
-/products/[id]
+/blog/[slug]
+/users/[slug]
+/products/[slug]
 
 ❌ Yanlış:
 /blog/[postId]

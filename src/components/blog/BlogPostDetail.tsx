@@ -4,6 +4,9 @@ import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { getBlogPost } from '@/lib/blog';
 import type { BlogPost } from '@/types/blog';
+import BlogError from './BlogError';
+import BlogLoading from './BlogLoading';
+import { Logger } from '@/lib/logger';
 
 // Varsayılan gradient arka plan renkleri
 const gradientColors = {
@@ -77,10 +80,10 @@ const BlogSources = ({ sources }: { sources: BlogPost['sources'] }) => (
 );
 
 interface Props {
-  id: string;
+  slug: string;
 }
 
-export default function BlogPostDetail({ id }: Props) {
+export default function BlogPostDetail({ slug }: Props) {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,47 +92,116 @@ export default function BlogPostDetail({ id }: Props) {
 
     async function fetchPost() {
       try {
-        const data = await getBlogPost(id);
-        if (!isMounted) return;
+        Logger.info('Blog yazısı yükleniyor:', { slug });
+        const data = await getBlogPost(slug);
+        
+        if (!isMounted) {
+          Logger.info('Bileşen unmount edildi, state güncellenmeyecek');
+          return;
+        }
         
         if (!data) {
+          Logger.error('Blog yazısı bulunamadı:', { slug });
           setError('Blog yazısı bulunamadı');
           return;
         }
+
+        Logger.info('Blog yazısı başarıyla yüklendi:', { 
+          slug: data.slug,
+          title: data.title 
+        });
         setPost(data);
       } catch (err) {
         if (!isMounted) return;
-        console.error('Blog yazısı yüklenirken hata:', err);
+        Logger.error('Blog yazısı yüklenirken hata:', err);
         setError('Blog yazısı yüklenirken bir hata oluştu');
       }
     }
 
     fetchPost();
     return () => { isMounted = false; };
-  }, [id]);
+  }, [slug]);
 
   if (error) {
-    return (
-      <div className="p-4 bg-red-100 text-red-700 rounded">
-        <p>{error}</p>
-      </div>
-    );
+    Logger.warn('Blog yazısı görüntülenirken hata:', { error });
+    return <BlogError message={error} />;
   }
 
   if (!post) {
-    return (
-      <div className="p-4">
-        <p>Yükleniyor...</p>
-      </div>
-    );
+    Logger.debug('Blog yazısı yükleniyor...');
+    return <BlogLoading type="detail" />;
   }
 
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
-      <BlogHeader post={post} />
-      <BlogContent content={post.content} description={post.description} />
-      {post.tags && post.tags.length > 0 && <BlogTags tags={post.tags} />}
-      {post.sources && post.sources.length > 0 && <BlogSources sources={post.sources} />}
+      {/* Header */}
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-8 rounded-lg mb-8">
+        <h1 className="text-4xl font-bold text-white mb-4">{post.title}</h1>
+        <div className="flex items-center gap-4">
+          {post.author.image && (
+            <img
+              src={post.author.image}
+              alt={post.author.name}
+              className="w-12 h-12 rounded-full"
+            />
+          )}
+          <div>
+            <p className="text-white font-medium">{post.author.name}</p>
+            <p className="text-white/80 text-sm">
+              {new Date(post.publishedAt).toLocaleDateString('tr-TR')} · {post.readingTime} dk okuma
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="prose prose-lg dark:prose-invert max-w-none">
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">{post.description}</p>
+        <ReactMarkdown>{post.content}</ReactMarkdown>
+      </div>
+
+      {/* Tags */}
+      {post.tags && post.tags.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-4">Etiketler</h2>
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sources */}
+      {post.sources && post.sources.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-4">Kaynaklar</h2>
+          <ul className="list-disc list-inside space-y-2">
+            {post.sources.map((source, index) => (
+              <li key={index}>
+                <a
+                  href={source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {source.title}
+                </a>
+                {source.description && (
+                  <p className="text-gray-600 dark:text-gray-400 text-sm ml-6">
+                    {source.description}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </article>
   );
 } 

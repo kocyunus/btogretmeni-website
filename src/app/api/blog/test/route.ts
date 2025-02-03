@@ -22,42 +22,21 @@ export async function GET() {
 
     // Test verisi oluştur
     const testPost = await BlogPostModel.create({
-      title: 'Next.js ile Blog Oluşturma',
-      description: 'Next.js kullanarak modern ve performanslı bir blog nasıl oluşturulur?',
-      content: `
-# Next.js ile Blog Oluşturma
-
-Next.js, React tabanlı web uygulamaları geliştirmek için mükemmel bir framework'tür. Bu yazıda, Next.js kullanarak nasıl modern ve performanslı bir blog oluşturabileceğinizi öğreneceksiniz.
-
-## Özellikler
-
-- Server-side rendering
-- Static site generation
-- API routes
-- TypeScript desteği
-- Tailwind CSS entegrasyonu
-
-## Başlangıç
-
-İlk olarak, yeni bir Next.js projesi oluşturalım:
-
-\`\`\`bash
-npx create-next-app@latest my-blog --typescript --tailwind
-\`\`\`
-      `,
-      excerpt: 'Next.js ile modern bir blog nasıl oluşturulur? Server-side rendering, static site generation ve daha fazlası...',
+      title: 'Test Blog Yazısı',
+      description: 'Bu bir test blog yazısıdır.',
+      content: '# Test İçeriği\n\nBu bir test blog yazısının içeriğidir.',
+      excerpt: 'Test blog yazısı özeti',
       readingTime: 5,
-      tags: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
-      isDraft: false,
-      publishedAt: new Date(),
+      tags: ['test', 'örnek'],
+      isDraft: true,
+      publishedAt: new Date().toISOString(),
       author: {
-        name: 'Yunus Koç',
-        title: 'BT Öğretmeni',
-        avatarUrl: '/images/avatar.jpg'
+        name: 'Test Yazar',
+        image: '/images/test-avatar.jpg'
       }
     });
 
-    Logger.info('Test blog yazısı oluşturuldu', { id: testPost._id });
+    Logger.info('Test blog yazısı oluşturuldu', { slug: testPost.slug });
     return NextResponse.json({ 
       message: 'Test blog yazısı oluşturuldu',
       post: testPost

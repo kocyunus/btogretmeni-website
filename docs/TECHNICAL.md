@@ -490,7 +490,7 @@ export default function HakkimdaPage() {
 - **Dosya Yapısı**:
   - `/src/data/blog-posts.ts`: Blog verileri
   - `/src/app/blog/page.tsx`: Blog listesi sayfası
-  - `/src/app/blog/[id]/page.tsx`: Blog detay sayfası
+  - `/src/app/blog/[slug]/page.tsx`: Blog detay sayfası
 
 ### İyileştirme Önerileri
 

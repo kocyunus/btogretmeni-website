@@ -40,14 +40,15 @@ function formatPost(doc: Document): BlogPost {
     content: post.content,
     excerpt: post.excerpt,
     readingTime: post.readingTime,
-    coverImage: post.coverImage || DEFAULT_COVER_IMAGE,
-    tags: post.tags || [],
-    isDraft: post.isDraft || false,
-    publishedAt: new Date(post.publishedAt || new Date()).toISOString(),
-    updatedAt: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
-    author: post.author || DEFAULT_AUTHOR,
-    sources: post.sources || [],
-    seo: post.seo
+    coverImage: post.coverImage,
+    tags: post.tags,
+    isDraft: post.isDraft,
+    publishedAt: post.publishedAt,
+    updatedAt: post.updatedAt,
+    author: post.author,
+    sources: post.sources,
+    seo: post.seo,
+    slug: post.slug
   };
 }
 
@@ -65,9 +66,24 @@ export async function GET() {
 
     Logger.info(`${posts.length} blog yazısı yüklendi`);
 
-    return NextResponse.json({ 
-      success: true,
-      posts: posts 
+    return NextResponse.json({
+      posts: posts.map(post => ({
+        ...post,
+        _id: String(post._id),
+        slug: post.slug || '',
+        title: post.title || '',
+        description: post.description || '',
+        content: post.content || '',
+        excerpt: post.excerpt || '',
+        readingTime: post.readingTime || 0,
+        tags: post.tags || [],
+        isDraft: post.isDraft || false,
+        publishedAt: post.publishedAt || new Date().toISOString(),
+        author: {
+          name: post.author?.name || '',
+          image: post.author?.image || ''
+        }
+      }))
     });
 
   } catch (error) {
@@ -92,7 +108,12 @@ export async function POST(request: Request) {
 
     const post = new BlogPostModel({
       ...data,
-      publishedAt: new Date(),
+      publishedAt: new Date().toISOString(),
+      isDraft: data.isDraft ?? true,
+      author: {
+        name: data.author?.name || DEFAULT_AUTHOR.name,
+        image: data.author?.image || DEFAULT_AUTHOR.avatarUrl
+      }
     });
 
     await post.save();
@@ -100,7 +121,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      post 
+      post: {
+        ...post.toObject(),
+        _id: String(post._id),
+        slug: post.slug || '',
+        publishedAt: post.publishedAt || new Date().toISOString()
+      }
     });
 
   } catch (error) {
@@ -119,13 +145,13 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const url = new URL(request.url);
-    const id = url.pathname.split('/').pop();
+    const slug = url.pathname.split('/').pop();
 
-    if (!id || id === 'blog') {
-      return new Response('Geçersiz blog yazısı ID', { status: 400 });
+    if (!slug || slug === 'blog') {
+      return new Response('Geçersiz blog yazısı slug', { status: 400 });
     }
 
-    const deletedPost = await getModel().findByIdAndDelete(id);
+    const deletedPost = await getModel().findOneAndDelete({ slug });
     if (!deletedPost) {
       return new Response('Blog yazısı bulunamadı', { status: 404 });
     }

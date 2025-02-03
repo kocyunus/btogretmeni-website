@@ -3,14 +3,22 @@
 import React from 'react';
 import Link from 'next/link';
 import type { BlogPost } from '@/types/blog';
+import { Logger } from '@/lib/logger';
 
 interface Props {
   post: BlogPost;
 }
 
 export default function BlogCard({ post }: Props) {
+  const handleClick = () => {
+    Logger.info('Blog kartına tıklandı:', {
+      slug: post.slug,
+      title: post.title
+    });
+  };
+
   return (
-    <Link href={`/blog/${post._id}`} className="block h-full">
+    <Link href={`/blog/${post.slug}`} onClick={handleClick} className="block h-full">
       <article className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:scale-[1.02] hover:bg-gray-800">
         <div className="relative h-52 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
           <div className="absolute inset-0 flex items-center justify-center p-6">
@@ -26,14 +34,27 @@ export default function BlogCard({ post }: Props) {
           </p>
           <div className="mt-auto">
             <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
-              <span>{new Date(post.publishedAt).toLocaleDateString('tr-TR')}</span>
-              <span>{post.readingTime} dk okuma</span>
+              <div className="flex items-center">
+                {post.author.image && (
+                  <img
+                    src={post.author.image}
+                    alt={post.author.name}
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                )}
+                <span>{post.author.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>{new Date(post.publishedAt).toLocaleDateString('tr-TR')}</span>
+                <span>·</span>
+                <span>{post.readingTime} dk okuma</span>
+              </div>
             </div>
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag: string) => (
                   <span
-                    key={tag}
+                    key={`${post.slug}-${tag}`}
                     className="px-3 py-1.5 text-sm bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-700"
                   >
                     {tag}

@@ -6,18 +6,20 @@ import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import debounce from 'lodash/debounce';
 import type { BlogFormData, BlogPost } from '@/types/blog';
+import { getBlogPost } from '@/lib/blog';
 
 // Varsayılan gradient arka plan renkleri
 const gradientClasses = 'bg-gradient-to-r from-blue-500 to-purple-600';
 
 interface Props {
-  id: string;
+  slug: string;
 }
 
-export default function BlogEditForm({ id }: Props) {
+export default function BlogEditForm({ slug }: Props) {
   const router = useRouter();
   const initialPost: BlogPost = {
     _id: '',
+    slug: '',
     title: '',
     description: '',
     content: '',
@@ -41,30 +43,35 @@ export default function BlogEditForm({ id }: Props) {
 
   // Blog yazısını getir
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchPost() {
       try {
-        const response = await fetch(`/api/blog/${id}`);
-        if (!response.ok) {
-          throw new Error('Blog yazısı getirilemedi');
+        const data = await getBlogPost(slug);
+        if (!isMounted) return;
+        
+        if (!data) {
+          setError('Blog yazısı bulunamadı');
+          return;
         }
-        const data = await response.json();
         setPost(data);
-        setError(null);
       } catch (err) {
-        console.error('Blog yazısı getirilirken hata:', err);
+        if (!isMounted) return;
+        console.error('Blog yazısı yüklenirken hata:', err);
         setError('Blog yazısı yüklenirken bir hata oluştu');
       }
     }
 
     fetchPost();
-  }, [id]);
+    return () => { isMounted = false; };
+  }, [slug]);
 
   // Form verilerini local storage'a kaydet
   const saveToLocalStorage = useCallback((data: BlogFormData) => {
-    localStorage.setItem(`blog-edit-${id}`, JSON.stringify(data));
+    localStorage.setItem(`blog-edit-${slug}`, JSON.stringify(data));
     setAutoSaveStatus('Taslak otomatik kaydedildi');
     setTimeout(() => setAutoSaveStatus(''), 2000);
-  }, [id]);
+  }, [slug]);
 
   // Otomatik kaydetme için debounce fonksiyonu
   const debouncedSave = useCallback(
@@ -74,7 +81,7 @@ export default function BlogEditForm({ id }: Props) {
 
   // Local storage'dan form verilerini yükle
   useEffect(() => {
-    const savedData = localStorage.getItem(`blog-edit-${id}`);
+    const savedData = localStorage.getItem(`blog-edit-${slug}`);
     if (savedData) {
       try {
         const data = JSON.parse(savedData);
@@ -83,7 +90,7 @@ export default function BlogEditForm({ id }: Props) {
         console.error('Kaydedilmiş veri yüklenirken hata:', err);
       }
     }
-  }, [id]);
+  }, [slug]);
 
   // Form değişikliklerini işle
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -108,7 +115,7 @@ export default function BlogEditForm({ id }: Props) {
 
     try {
       setSaving(true);
-      const response = await fetch(`/api/blog/${id}`, {
+      const response = await fetch(`/api/blog/${slug}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -120,7 +127,7 @@ export default function BlogEditForm({ id }: Props) {
         throw new Error('Blog yazısı güncellenemedi');
       }
 
-      localStorage.removeItem(`blog-edit-${id}`);
+      localStorage.removeItem(`blog-edit-${slug}`);
       router.push('/admin/blog');
     } catch (err) {
       console.error('Blog yazısı güncellenirken hata:', err);

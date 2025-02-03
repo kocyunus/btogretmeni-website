@@ -31,22 +31,25 @@ export async function POST() {
       const { data, content } = matter(fileContent);
       
       // Önce bu başlıkla bir yazı var mı kontrol et
-      const existingPost = await BlogPostModel.findOne({ title: data.title });
+      const existingPost = await BlogPostModel.findOne({ slug: data.slug });
       
       if (existingPost) {
         // Varsa güncelle
-        await BlogPostModel.findByIdAndUpdate(existingPost._id, {
-          description: data.description,
-          content: content,
-          excerpt: data.excerpt,
-          readingTime: data.readingTime,
-          tags: data.tags,
-          isDraft: data.isDraft,
-          publishedAt: new Date(data.publishedAt),
-          author: data.author,
-          coverImage: data.coverImage,
-          updatedAt: new Date()
-        });
+        await BlogPostModel.findOneAndUpdate(
+          { slug: existingPost.slug },
+          {
+            ...data,
+            content: content,
+            excerpt: data.excerpt,
+            readingTime: data.readingTime,
+            tags: data.tags,
+            isDraft: data.isDraft,
+            publishedAt: new Date(data.publishedAt),
+            author: data.author,
+            coverImage: data.coverImage,
+            updatedAt: new Date().toISOString()
+          }
+        );
         updatedCount++;
         Logger.info(`Blog yazısı güncellendi: ${data.title}`);
       } else {

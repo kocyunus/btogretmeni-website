@@ -6,7 +6,7 @@ export interface Source {
 
 export interface Author {
   name: string;
-  title: string;
+  title?: string;
   image: string;
 }
 
@@ -19,6 +19,7 @@ export interface SEO {
 
 export interface BlogPost {
   _id: string;
+  slug: string;
   title: string;
   description: string;
   content: string;

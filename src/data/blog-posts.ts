@@ -5,6 +5,7 @@ export const blogPosts: BlogPost[] = [
   {
     _id: "1",
     title: "Scratch ile Çocuklar için Kodlama",
+    slug: "scratch-ile-cocuklar-icin-kodlama",
     description: "Scratch kullanarak çocuklara kodlama öğretmenin yolları ve faydaları",
     content: "Scratch, MIT Media Lab tarafından geliştirilen ve çocukların programlama öğrenmesini kolaylaştıran blok tabanlı bir kodlama platformudur...",
     excerpt: "Scratch ile kodlama öğrenmek çocuklar için eğlenceli ve öğretici bir deneyim sunuyor.",
@@ -21,6 +22,7 @@ export const blogPosts: BlogPost[] = [
   {
     _id: "2",
     title: "Python ile Veri Analizi",
+    slug: "python-ile-veri-analizi",
     description: "Python programlama dili kullanarak veri analizi yapmanın temelleri",
     content: "Python, veri analizi için en popüler programlama dillerinden biridir...",
     excerpt: "Python ile veri analizi yaparak verilerinizi anlamlandırın.",

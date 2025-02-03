@@ -32,6 +32,8 @@ Blog sistemi, modern web teknolojileri kullanılarak geliştirilmiş, ölçeklen
 - 📱 Responsive grid layout
 - 🌙 Karanlık/Aydınlık tema desteği
 - ⚡ Sayfa geçişlerinde yükleme animasyonları
+- 📤 Markdown dosyalarından otomatik import
+- 🛡️ Veritabanı sıfırlama koruması
 
 ## Teknoloji Yığını
 
@@ -204,11 +206,14 @@ Blog kartları, yazıları görsel olarak çekici bir şekilde sunar:
    - Rate limiting
    - CORS yapılandırması
    - Input validasyonu
+   - Veritabanı sıfırlama koruması (SKIP_DB_RESET)
+   - Markdown içerik doğrulama
 
 2. **Veri Güvenliği**
    - Şifreleme (at rest & in transit)
    - Güvenli session yönetimi
    - XSS & CSRF koruması
+   - Blog içeriği yedekleme ve koruma
 
 3. **Erişim Kontrolü**
    - Role-based access control

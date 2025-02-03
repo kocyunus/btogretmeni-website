@@ -51,20 +51,20 @@ src/
      }
      ```
 
-3. `GET /api/blog/[id]`
+3. `GET /api/blog/[slug]`
    - Tek bir blog yazısını getirir
    - URL parametreleri:
-     - `id`: string (blog yazısı ID'si)
+     - `slug`: string (blog yazısı slug'i)
 
-4. `PUT /api/blog/[id]`
+4. `PUT /api/blog/[slug]`
    - Blog yazısını günceller
    - URL parametreleri:
-     - `id`: string (blog yazısı ID'si)
+     - `slug`: string (blog yazısı slug'i)
 
-5. `DELETE /api/blog/[id]`
+5. `DELETE /api/blog/[slug]`
    - Blog yazısını siler
    - URL parametreleri:
-     - `id`: string (blog yazısı ID'si)
+     - `slug`: string (blog yazısı slug'i)
 
 ## Veritabanı Şeması
 

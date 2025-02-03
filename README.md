@@ -1,100 +1,84 @@
-# BT Ogretmeni
+# BT Öğretmeni Web Sitesi
 
-Kisisel blog ve egitim platformu.
+Modern ve kullanıcı dostu kişisel web sitem.
 
-## Ozellikler
+## Özellikler
 
-- 📝 Blog yazilari
-  - Modern kart tasarımı
-  - Responsive grid layout
-  - Etiket sistemi
-  - Okuma süresi hesaplama
-- 🎓 Egitim icerikleri
-- 💼 Proje portfoyu
-- 📊 Analytics entegrasyonu
+- 🌙 Dark/Light tema desteği
+- 📱 Responsive tasarım
+- 📝 Blog sistemi
+- 🚀 Proje yönetimi
+- 📊 Admin paneli
 - 🔍 SEO optimizasyonu
-- 🌙 Karanlık/Aydınlık tema
-- 🌐 Responsive tasarım
-- ⚡ Modern UI/UX
+- 🖼️ Görsel optimizasyonu
+- 🔒 Güvenli yetkilendirme
 
 ## Teknolojiler
 
 - Next.js 14
-- React 18
 - TypeScript
-- Tailwind CSS
 - MongoDB
-- Next-themes
-- React-icons
-- Mongoose
-- Vercel Deployment
+- Tailwind CSS
+- shadcn/ui
 
-## Baslangic
+## Kurulum
 
-1. Gereksinimleri yukleyin:
+1. Repoyu klonlayın:
+```bash
+git clone https://github.com/username/bt-ogretmeni.git
+cd bt-ogretmeni
+```
+
+2. Bağımlılıkları yükleyin:
 ```bash
 npm install
 ```
 
-2. MongoDB URI'yi ayarlayın:
+3. Ortam değişkenlerini ayarlayın:
 ```bash
-# .env.local dosyasında
-MONGODB_URI=your_mongodb_uri
+cp .env.example .env.local
 ```
 
-3. Gelistirme sunucusunu baslatın:
+4. Geliştirme sunucusunu başlatın:
 ```bash
 npm run dev
 ```
 
-4. Tarayicinizda acin:
-```
-http://localhost:3000
-```
+## Dokümantasyon
 
-## Veritabanı Yapısı
+### Blog Sistemi
+- [Genel Bakış](docs/blog-system/README.md)
+- [API Endpoints](docs/blog-system/api-endpoints.md)
+- [Veritabanı Yapısı](docs/blog-system/database-structure.md)
+- [Bileşenler](docs/blog-system/components-and-pagination.md)
+- [Yardımcı Fonksiyonlar](docs/blog-system/helpers.md)
+- [Kararlı Sürüm 1.0](docs/blog-system/STABLE-VERSION-1.0.md)
 
-### MongoDB Koleksiyonları
+### Proje Sistemi
+- [Genel Bakış](docs/project-system/README.md)
+- [API Endpoints](docs/project-system/api-endpoints.md)
+- [Veritabanı Yapısı](docs/project-system/database-structure.md)
+- [Bileşenler](docs/project-system/components.md)
+- [Admin Paneli](docs/project-system/admin-panel.md)
 
-- `blogposts`: Blog yazıları
-  - title: String
-  - description: String
-  - content: String
-  - tags: [String]
-  - publishedAt: Date
-  - readingTime: Number
+### Diğer
+- [Teknik Detaylar](docs/TECHNICAL.md)
+- [Slug Kullanımı](docs/SLUG_USAGE.md)
 
-## API Endpoints
+## Katkıda Bulunma
 
-### Blog API
-
-- `GET /api/blog`: Tüm blog yazılarını getirir
-- `GET /api/blog/:id`: Belirli bir blog yazısını getirir
-- `POST /api/blog`: Yeni blog yazısı oluşturur
-- `PUT /api/blog/:id`: Blog yazısını günceller
-- `DELETE /api/blog/:id`: Blog yazısını siler
-
-## Katki
-
-Katki saglamak icin:
-1. Fork yapin
-2. Feature branch olusturun
-3. Degisikliklerinizi commit edin
-4. Pull request gonderin
+1. Bu repoyu fork edin
+2. Yeni bir branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Değişikliklerinizi commit edin (`git commit -m 'feat: add amazing feature'`)
+4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
 
 ## Lisans
 
-MIT
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 
-## Iletisim
+## İletişim
 
-- Website: [btogretmeni.com](https://btogretmeni.com)
-- Email: info@btogretmeni.com
+Yunus Koç - [@btogretmeni](https://twitter.com/btogretmeni)
 
-## Veritabanı Kaynakları
-
-### MongoDB
-
-MongoDB ile ilgili kaynaklar:
-
-- [MongoDB Resmi Sürücü Belgeleri](https://www.mongodb.com/docs/drivers/) - MongoDB sürücüleri hakkında detaylı bilgi ve kullanım kılavuzları.
+Proje Linki: [https://github.com/username/bt-ogretmeni](https://github.com/username/bt-ogretmeni)

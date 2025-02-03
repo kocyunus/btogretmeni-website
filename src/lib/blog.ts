@@ -1,9 +1,11 @@
 'use server';
 
 import { connectToDatabase } from '@/lib/mongodb';
-import BlogPostModel from '@/models/BlogPost';
+import BlogPostModel, { BlogPostDocument } from '@/models/BlogPost';
 import type { Document } from 'mongoose';
 import type { BlogPost } from '@/types/blog';
+import slugify from 'slugify';
+import { Logger } from './logger';
 
 // Model kontrolü
 function getModel() {
@@ -18,8 +20,8 @@ function formatPost(doc: Document): BlogPost {
   const post = doc.toObject();
   return {
     ...post,
-    id: post._id.toString(),
-    publishedAt: new Date(post.publishedAt || new Date())
+    _id: String(post._id),
+    publishedAt: new Date(post.publishedAt || new Date()).toISOString()
   };
 }
 
@@ -27,9 +29,26 @@ function formatPost(doc: Document): BlogPost {
 export async function getBlogPosts(): Promise<BlogPost[]> {
   try {
     await connectToDatabase();
-    const BlogPost = getModel();
-    const posts = await BlogPost.find().sort({ publishedAt: -1 });
-    return posts.map(post => formatPost(post));
+    const posts = await getModel().find()
+      .sort({ publishedAt: -1 })
+      .lean();
+    return posts.map(post => ({
+      ...post,
+      _id: String(post._id),
+      slug: post.slug || '',
+      title: post.title || '',
+      description: post.description || '',
+      content: post.content || '',
+      excerpt: post.excerpt || '',
+      readingTime: post.readingTime || 0,
+      tags: post.tags || [],
+      isDraft: post.isDraft || false,
+      publishedAt: post.publishedAt || new Date().toISOString(),
+      author: {
+        name: post.author?.name || '',
+        image: post.author?.image || ''
+      }
+    }));
   } catch (error) {
     console.error('Blog yazıları getirilirken hata:', error);
     throw error;
@@ -37,20 +56,34 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 }
 
 // Blog yazısını getir
-export async function getBlogPost(id: string): Promise<BlogPost | null> {
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     await connectToDatabase();
-    const BlogPost = getModel();
-    const post = await BlogPost.findById(id);
+    const post = await getModel().findOne({ slug }).lean();
     
-    if (!post) {
-      return null;
-    }
+    if (!post) return null;
 
-    return formatPost(post);
+    const formattedPost: BlogPost = {
+      _id: String(post._id || ''),
+      slug: String(post.slug || ''),
+      title: String(post.title || ''),
+      description: String(post.description || ''),
+      content: String(post.content || ''),
+      excerpt: String(post.excerpt || ''),
+      readingTime: Number(post.readingTime || 0),
+      tags: Array.isArray(post.tags) ? post.tags : [],
+      isDraft: Boolean(post.isDraft),
+      publishedAt: String(post.publishedAt || new Date().toISOString()),
+      author: {
+        name: String(post.author?.name || ''),
+        image: String(post.author?.image || '')
+      }
+    };
+
+    return formattedPost;
   } catch (error) {
     console.error('Blog yazısı getirilirken hata:', error);
-    return null;
+    throw error;
   }
 }
 
@@ -58,12 +91,13 @@ export async function getBlogPost(id: string): Promise<BlogPost | null> {
 export async function createBlogPost(post: Partial<BlogPost>): Promise<BlogPost> {
   try {
     await connectToDatabase();
-    const BlogPost = getModel();
-    const newPost = await BlogPost.create({
+    const Model = getModel();
+    const newPost = new Model({
       ...post,
       publishedAt: new Date(),
       isDraft: post.isDraft ?? true
     });
+    await newPost.save();
     return formatPost(newPost);
   } catch (error) {
     console.error('Blog yazısı oluşturulurken hata:', error);
@@ -72,12 +106,11 @@ export async function createBlogPost(post: Partial<BlogPost>): Promise<BlogPost>
 }
 
 // Blog yazısını güncelle
-export async function updateBlogPost(id: string, post: Partial<BlogPost>): Promise<BlogPost | null> {
+export async function updateBlogPost(slug: string, post: Partial<BlogPost>): Promise<BlogPost | null> {
   try {
     await connectToDatabase();
-    const BlogPost = getModel();
-    const updatedPost = await BlogPost.findByIdAndUpdate(
-      id,
+    const updatedPost = await getModel().findOneAndUpdate(
+      { slug },
       { ...post, updatedAt: new Date() },
       { new: true }
     );
@@ -89,14 +122,45 @@ export async function updateBlogPost(id: string, post: Partial<BlogPost>): Promi
 }
 
 // Blog yazısını sil
-export async function deleteBlogPost(id: string): Promise<boolean> {
+export async function deleteBlogPost(slug: string): Promise<boolean> {
   try {
     await connectToDatabase();
-    const BlogPost = getModel();
-    const result = await BlogPost.findByIdAndDelete(id);
+    const result = await getModel().findOneAndDelete({ slug });
     return !!result;
   } catch (error) {
     console.error('Blog yazısı silinirken hata:', error);
+    throw error;
+  }
+}
+
+export async function updateAllBlogSlugs() {
+  try {
+    await connectToDatabase();
+    
+    // Tüm blog yazılarını al
+    const posts = await getModel().find({});
+    
+    // Her bir yazı için slug oluştur ve güncelle
+    for (const post of posts) {
+      if (!post.slug && post.title) {
+        const slug = slugify(post.title, {
+          lower: true,
+          strict: true,
+          locale: 'tr'
+        });
+        
+        await getModel().findByIdAndUpdate(post._id, { slug });
+        Logger.info('Blog yazısı slug değeri güncellendi:', {
+          id: post._id,
+          title: post.title,
+          slug
+        });
+      }
+    }
+    
+    return { success: true, message: 'Tüm blog yazılarının slug değerleri güncellendi' };
+  } catch (error) {
+    Logger.error('Blog yazıları güncellenirken hata:', error);
     throw error;
   }
 } 

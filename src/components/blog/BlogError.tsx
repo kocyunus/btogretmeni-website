@@ -1,8 +1,18 @@
-export default function BlogError() {
+interface Props {
+  message?: string;
+}
+
+export default function BlogError({ message = 'Bir hata oluştu' }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-800 rounded-lg p-8">
-      <h2 className="text-2xl font-bold text-red-400 mb-4">Bir hata oluştu</h2>
-      <p className="text-gray-400">Blog yazıları yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</p>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-2">
+          Hata
+        </h2>
+        <p className="text-red-600 dark:text-red-300">
+          {message}
+        </p>
+      </div>
     </div>
   );
 } 

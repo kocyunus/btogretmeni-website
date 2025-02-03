@@ -1,37 +1,34 @@
-interface BlogLoadingProps {
-  type?: 'list' | 'detail';
+interface Props {
+  type: 'list' | 'detail';
 }
 
-export default function BlogLoading({ type = 'list' }: BlogLoadingProps) {
+export default function BlogLoading({ type }: Props) {
   if (type === 'detail') {
     return (
-      <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-xl overflow-hidden animate-pulse">
-        {/* Gradient başlık alanı yükleniyor */}
-        <div className="bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 p-8 md:p-16">
-          <div className="space-y-6 text-center">
-            <div className="h-12 bg-gray-600 rounded-lg mx-auto max-w-2xl" />
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-gray-600 rounded-full" />
-                <div className="h-4 w-24 bg-gray-600 rounded" />
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="h-4 w-32 bg-gray-600 rounded" />
-                <div className="h-4 w-4 bg-gray-600 rounded-full" />
-                <div className="h-4 w-24 bg-gray-600 rounded" />
-              </div>
-            </div>
+      <div className="max-w-4xl mx-auto px-4 py-8 animate-pulse">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-8 rounded-lg mb-8">
+          <div className="h-8 bg-white/20 rounded w-3/4 mb-4"></div>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-white/20"></div>
+            <div className="h-4 bg-white/20 rounded w-32"></div>
           </div>
         </div>
 
-        {/* İçerik alanı yükleniyor */}
-        <div className="p-8">
-          <div className="space-y-4">
-            <div className="h-4 bg-gray-700 rounded w-full" />
-            <div className="h-4 bg-gray-700 rounded w-full" />
-            <div className="h-4 bg-gray-700 rounded w-3/4" />
-            <div className="h-4 bg-gray-700 rounded w-full" />
-            <div className="h-4 bg-gray-700 rounded w-5/6" />
+        {/* Content */}
+        <div className="space-y-4">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
+        </div>
+
+        {/* Tags */}
+        <div className="mt-8">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-4"></div>
+          <div className="flex gap-2">
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
           </div>
         </div>
       </div>
@@ -39,16 +36,27 @@ export default function BlogLoading({ type = 'list' }: BlogLoadingProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className="bg-gray-800 rounded-lg shadow-lg overflow-hidden animate-pulse">
-          <div className="h-48 bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700" />
-          <div className="p-6">
-            <div className="h-4 bg-gray-700 rounded w-3/4 mb-4" />
-            <div className="h-4 bg-gray-700 rounded w-1/2" />
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="animate-pulse">
+            <div className="bg-gray-800/50 rounded-xl overflow-hidden">
+              <div className="h-52 bg-gradient-to-r from-indigo-500/50 via-purple-500/50 to-pink-500/50"></div>
+              <div className="p-8">
+                <div className="h-6 bg-gray-700 rounded w-3/4 mb-4"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-gray-700 rounded w-full"></div>
+                  <div className="h-4 bg-gray-700 rounded w-5/6"></div>
+                </div>
+                <div className="mt-6 flex gap-2">
+                  <div className="h-6 bg-gray-700 rounded w-16"></div>
+                  <div className="h-6 bg-gray-700 rounded w-20"></div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 } 

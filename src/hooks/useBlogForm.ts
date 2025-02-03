@@ -13,6 +13,7 @@ export function useBlogForm({ onSuccess, initialData }: UseBlogFormProps = {}) {
   const [formData, setFormData] = useState<BlogFormData>({
     _id: initialData?._id || '',
     title: initialData?.title || '',
+    slug: initialData?.slug || '',
     description: initialData?.description || '',
     content: initialData?.content || '',
     excerpt: initialData?.excerpt || '',
@@ -68,6 +69,7 @@ export function useBlogForm({ onSuccess, initialData }: UseBlogFormProps = {}) {
         },
         body: JSON.stringify({
           title: formData.title,
+          slug: formData.slug,
           description: formData.description,
           content: formData.content,
           excerpt: formData.excerpt,

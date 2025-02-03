@@ -20,10 +20,10 @@ Blog sistemi şu an aşağıdaki temel özelliklere sahiptir:
 
 3. **API Endpoints**
    - Blog yazılarını listeleme (`GET /api/blog`)
-   - Tekil blog yazısı görüntüleme (`GET /api/blog/[id]`)
+   - Tekil blog yazısı görüntüleme (`GET /api/blog/[slug]`)
    - Blog yazısı ekleme (`POST /api/blog`)
-   - Blog yazısı güncelleme (`PUT /api/blog/[id]`)
-   - Blog yazısı silme (`DELETE /api/blog/[id]`)
+   - Blog yazısı güncelleme (`PUT /api/blog/[slug]`)
+   - Blog yazısı silme (`DELETE /api/blog/[slug]`)
    - Markdown import (`POST /api/blog/import`)
 
 4. **Güvenlik Özellikleri**
@@ -40,6 +40,8 @@ src/
 │   ├── api/
 │   │   └── blog/
 │   │       ├── [id]/
+│   │       │   └── route.ts       # Tekil blog işlemleri
+│   │       ├── [slug]/
 │   │       │   └── route.ts       # Tekil blog işlemleri
 │   │       ├── import/
 │   │       │   └── route.ts       # Markdown import
