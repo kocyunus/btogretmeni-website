@@ -25,8 +25,8 @@ Modern ve kullanıcı dostu kişisel web sitesi.
 
 1. Repoyu klonlayın:
 ```bash
-git clone https://github.com/username/bt-ogretmeni.git
-cd bt-ogretmeni
+git clone https://github.com/username/website.git
+cd website
 ```
 
 2. Bağımlılıkları yükleyin:
@@ -84,4 +84,4 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 
 ## İletişim
 
-İletişim için [GitHub Issues](https://github.com/username/bt-ogretmeni/issues) kullanabilirsiniz.
+İletişim için [GitHub Issues](https://github.com/username/website/issues) kullanabilirsiniz.

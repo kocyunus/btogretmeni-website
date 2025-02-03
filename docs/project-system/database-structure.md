@@ -49,12 +49,17 @@ const ProjectSchema = new Schema<ProjectDocument>({
   githubUrl: { type: String },
   downloadUrl: { type: String },
   playStoreUrl: { type: String },
-  appStoreUrl: { type: String },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  publishedAt: { type: Date }
+  appStoreUrl: { type: String }
 }, {
   timestamps: true
+});
+
+// Slug oluşturma ve güncelleme
+ProjectSchema.pre('save', function(next) {
+  if (this.isModified('slug')) {
+    this.slug = this.slug.toLowerCase();
+  }
+  next();
 });
 ```
 
@@ -136,10 +141,10 @@ ProjectSchema.pre('save', function(next) {
 ```json
 {
   "_id": "ObjectId('...')",
-  "title": "BT Öğretmeni Web Sitesi",
-  "description": "Kişisel web sitem için modern ve kullanıcı dostu bir arayüz tasarımı.",
-  "summary": "Modern ve kullanıcı dostu kişisel web sitesi",
-  "slug": "bt-ogretmeni-web-sitesi",
+  "title": "Örnek Proje",
+  "description": "Bu bir örnek proje açıklamasıdır.",
+  "summary": "Örnek proje özeti",
+  "slug": "ornek-proje",
   "category": "WebSite",
   "technologies": [
     "Next.js",
@@ -148,21 +153,20 @@ ProjectSchema.pre('save', function(next) {
     "Tailwind CSS"
   ],
   "features": [
-    "Responsive Tasarım",
-    "Dark Mode",
-    "Blog Sistemi",
-    "Proje Yönetimi"
+    "Özellik 1",
+    "Özellik 2",
+    "Özellik 3"
   ],
   "images": [
-    "/projects/bt-ogretmeni/cover.jpg",
-    "/projects/bt-ogretmeni/dashboard.jpg"
+    "/projects/example/image1.jpg",
+    "/projects/example/image2.jpg"
   ],
   "status": "completed",
   "isPublished": true,
   "startDate": "2024-01-01T00:00:00.000Z",
   "endDate": "2024-02-01T00:00:00.000Z",
-  "demoUrl": "https://btogretmeni.com",
-  "githubUrl": "https://github.com/username/bt-ogretmeni",
+  "demoUrl": "https://example.com",
+  "githubUrl": "https://github.com/username/example",
   "createdAt": "2024-01-01T00:00:00.000Z",
   "updatedAt": "2024-02-01T00:00:00.000Z",
   "publishedAt": "2024-02-01T00:00:00.000Z"

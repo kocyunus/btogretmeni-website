@@ -43,10 +43,10 @@ Blog sistemi MongoDB veritabanını kullanır. Ana koleksiyon `blogposts`'tur.
 ```javascript
 // Performans optimizasyonu için indeksler
 {
-  title: 'text',           // Metin araması için
-  tags: 1,                 // Etiket bazlı filtreleme için
-  publishedAt: -1,         // Tarih bazlı sıralama için
-  isDraft: 1              // Taslak/yayın durumu filtrelemesi için
+  title: 1,
+  tags: 1,
+  publishedAt: -1,
+  isDraft: 1
 }
 ```
 
@@ -136,12 +136,12 @@ const deletedPost = await BlogPost.findByIdAndDelete(id);
 
 1. **Otomatik Yedekleme**
    ```bash
-   mongodump --uri="mongodb://localhost:27017/blog" --out=/backup
+   mongodump --uri="your-mongodb-uri" --out=/backup
    ```
 
 2. **Yedekten Geri Yükleme**
    ```bash
-   mongorestore --uri="mongodb://localhost:27017/blog" /backup
+   mongorestore --uri="your-mongodb-uri" /backup
    ```
 
 ## Güvenlik

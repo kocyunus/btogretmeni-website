@@ -72,12 +72,10 @@ export async function getToken(): Promise<string | undefined> {
 
 // Oturum açma işlemi
 export async function login(email: string, password: string): Promise<User | null> {
-  // TODO: Veritabanından kullanıcıyı bul ve şifreyi kontrol et
-  // Bu örnek için sabit bir kullanıcı döndürüyoruz
-  if (email === 'admin@btogretmeni.com' && password === process.env.ADMIN_PASSWORD) {
+  if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
     return {
       id: '1',
-      email: 'admin@btogretmeni.com',
+      email: process.env.ADMIN_EMAIL || '',
       name: 'Admin',
       role: UserRole.ADMIN.toString(),
     };
