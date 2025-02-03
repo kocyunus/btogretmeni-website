@@ -70,7 +70,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-8 text-center text-white">Sosyal Medya</h2>
           <div className="flex justify-center items-center space-x-8">
             <a
-              href="https://www.instagram.com/username"
+              href={process.env.NEXT_PUBLIC_INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-pink-500 transition-colors"
@@ -78,7 +78,7 @@ export default function Home() {
               <FaInstagram className="w-8 h-8" />
             </a>
             <a
-              href="https://www.youtube.com/@username"
+              href={process.env.NEXT_PUBLIC_YOUTUBE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-red-500 transition-colors"
@@ -86,7 +86,7 @@ export default function Home() {
               <FaYoutube className="w-8 h-8" />
             </a>
             <a
-              href="https://www.linkedin.com/in/username"
+              href={process.env.NEXT_PUBLIC_LINKEDIN_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-blue-500 transition-colors"
@@ -94,7 +94,7 @@ export default function Home() {
               <FaLinkedin className="w-8 h-8" />
             </a>
             <a
-              href="https://github.com/username"
+              href={process.env.NEXT_PUBLIC_GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-gray-400 transition-colors"
@@ -102,7 +102,7 @@ export default function Home() {
               <FaGithub className="w-8 h-8" />
             </a>
             <a
-              href="https://www.upwork.com/freelancers/~username"
+              href={process.env.NEXT_PUBLIC_UPWORK_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-[#6fda44] transition-colors"
