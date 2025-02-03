@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link'
-import { EducationIcon, ProjectIcon, BlogIcon, EmailIcon } from '@/components/icons/HomeIcons'
+import { EducationIcon, ProjectIcon, BlogIcon } from '@/components/icons/HomeIcons'
+import { FaInstagram, FaYoutube, FaLinkedin, FaGithub } from 'react-icons/fa'
+import { SiUpwork } from 'react-icons/si'
+import InteractiveRods from '@/components/InteractiveRods'
 
 export default function Home() {
   return (
@@ -9,11 +12,14 @@ export default function Home() {
       <div className="container mx-auto px-4 py-16">
         {/* Hero Bölümü */}
         <section className="text-center mb-16">
+          <div className="mb-12">
+            <InteractiveRods />
+          </div>
           <h1 className="text-5xl font-bold mb-6 text-white">
             Hoş Geldiniz
           </h1>
-          <p className="text-xl mb-8 text-gray-300">
-            Bilişim teknolojileri ve yazılım geliştirme alanındaki deneyimlerimi paylaşıyorum.
+          <p className="text-xl mb-8 text-gray-300 max-w-2xl mx-auto">
+            Eğitimci yaklaşımım ve yenilikçi içeriklerle, öğrenmeyi eğlenceli hale getiriyorum. Bilgi ve ilham dolu bu yolculuğa siz de katılın!
           </p>
         </section>
 
@@ -59,19 +65,50 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Hakkımda Bölümü */}
+        {/* Sosyal Medya Bölümü */}
         <section className="mb-16 bg-gray-800/30 p-8 rounded-xl border border-gray-700">
-          <h2 className="text-3xl font-bold mb-8 text-white">Hakkımda</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4 text-gray-200">İletişim Bilgileri</h3>
-              <div className="space-y-4">
-                <a href="mailto:info@example.com" className="flex items-center text-gray-300 hover:text-blue-400 transition-colors">
-                  <EmailIcon />
-                  <span className="ml-2">info@example.com</span>
-                </a>
-              </div>
-            </div>
+          <h2 className="text-3xl font-bold mb-8 text-center text-white">Sosyal Medya</h2>
+          <div className="flex justify-center items-center space-x-8">
+            <a
+              href="https://www.instagram.com/username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-pink-500 transition-colors"
+            >
+              <FaInstagram className="w-8 h-8" />
+            </a>
+            <a
+              href="https://www.youtube.com/@username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-red-500 transition-colors"
+            >
+              <FaYoutube className="w-8 h-8" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-blue-500 transition-colors"
+            >
+              <FaLinkedin className="w-8 h-8" />
+            </a>
+            <a
+              href="https://github.com/username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-gray-400 transition-colors"
+            >
+              <FaGithub className="w-8 h-8" />
+            </a>
+            <a
+              href="https://www.upwork.com/freelancers/~username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-[#6fda44] transition-colors"
+            >
+              <SiUpwork className="w-8 h-8" />
+            </a>
           </div>
         </section>
       </div>

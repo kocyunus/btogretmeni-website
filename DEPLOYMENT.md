@@ -4,22 +4,22 @@
 
 ### MongoDB Bağlantısı
 ```env
-MONGODB_URI=mongodb+srv://yunus:yunus123db@cluster0.mfdje.mongodb.net/?retryWrites=true&w=majority
-NEXT_PUBLIC_MONGODB_URI=mongodb+srv://yunus:yunus123db@cluster0.mfdje.mongodb.net/?retryWrites=true&w=majority
+MONGODB_URI=your-mongodb-connection-string
+NEXT_PUBLIC_MONGODB_URI=your-mongodb-connection-string
 ```
 
 ### Admin Bilgileri
 ```env
-ADMIN_TOKEN=admin123token
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin123
-JWT_SECRET=gizli-jwt-anahtari-buraya-yazilacak
+ADMIN_TOKEN=your-admin-token
+ADMIN_USERNAME=your-admin-username
+ADMIN_PASSWORD=your-admin-password
+JWT_SECRET=your-jwt-secret-key
 ```
 
 ### Email Ayarları
 ```env
-EMAIL_USER=kocyns1@gmail.com
-EMAIL_PASS=baugqnttqkrbzwjt
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-email-password
 ```
 
 ## 2. Build Ayarları

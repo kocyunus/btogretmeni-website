@@ -1,6 +1,6 @@
 # BT Öğretmeni Web Sitesi
 
-Modern ve kullanıcı dostu kişisel web sitem.
+Modern ve kullanıcı dostu kişisel web sitesi.
 
 ## Özellikler
 
@@ -39,7 +39,12 @@ npm install
 cp .env.example .env.local
 ```
 
-4. Geliştirme sunucusunu başlatın:
+4. `.env.local` dosyasını düzenleyin:
+- MongoDB bağlantı bilgilerinizi ekleyin
+- Admin kullanıcı bilgilerinizi belirleyin
+- Email ayarlarınızı yapılandırın
+
+5. Geliştirme sunucusunu başlatın:
 ```bash
 npm run dev
 ```
@@ -79,6 +84,4 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 
 ## İletişim
 
-Yunus Koç - [@btogretmeni](https://twitter.com/btogretmeni)
-
-Proje Linki: [https://github.com/username/bt-ogretmeni](https://github.com/username/bt-ogretmeni)
+İletişim için [GitHub Issues](https://github.com/username/bt-ogretmeni/issues) kullanabilirsiniz.
