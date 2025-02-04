@@ -47,10 +47,14 @@ export default async function BlogPost({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <Suspense fallback={<BlogLoading type="detail" />}>
-        <BlogPostDetail slug={params.slug} />
-      </Suspense>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white dark:bg-gray-800/50 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
+          <Suspense fallback={<BlogLoading type="detail" />}>
+            <BlogPostDetail slug={params.slug} />
+          </Suspense>
+        </div>
+      </div>
     </div>
   );
 } 

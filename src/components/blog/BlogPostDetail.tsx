@@ -133,7 +133,7 @@ export default function BlogPostDetail({ slug }: Props) {
   }
 
   return (
-    <article className="max-w-4xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 min-h-screen">
+    <article className="p-6 md:p-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-8 rounded-lg mb-8 shadow-lg">
         <h1 className="text-4xl font-bold text-white mb-4">{post.title}</h1>
@@ -155,7 +155,7 @@ export default function BlogPostDetail({ slug }: Props) {
       </div>
 
       {/* Content */}
-      <div className="prose prose-lg max-w-none bg-white dark:bg-gray-900 rounded-lg p-6
+      <div className="prose prose-lg max-w-none bg-white dark:bg-transparent rounded-lg
         prose-headings:text-gray-900 dark:prose-headings:text-gray-100
         prose-h1:text-3xl prose-h1:font-bold
         prose-h2:text-2xl prose-h2:font-semibold
