@@ -88,7 +88,7 @@ export default function ProjectList() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-white">Projeler</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Projeler</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => (
@@ -97,7 +97,7 @@ export default function ProjectList() {
             href={`/projeler/${project.slug}`}
             className="group block"
           >
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:bg-gray-800">
+            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 overflow-hidden">
               {project.images && project.images.length > 0 && (
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -126,11 +126,11 @@ export default function ProjectList() {
                   </span>
                 </div>
                 
-                <h2 className="text-xl font-bold text-white mb-2">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   {project.title}
                 </h2>
                 
-                <p className="text-gray-300 mb-4 line-clamp-3">
+                <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
                   {project.description}
                 </p>
 
@@ -139,7 +139,7 @@ export default function ProjectList() {
                     {project.technologies.map((tech, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 text-xs font-medium rounded bg-gray-700 text-gray-200"
+                        className="px-2 py-1 text-xs font-medium rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200"
                       >
                         {tech}
                       </span>
