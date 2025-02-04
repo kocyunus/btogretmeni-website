@@ -133,16 +133,16 @@ export default function BlogPostDetail({ slug }: Props) {
   }
 
   return (
-    <article className="max-w-4xl mx-auto px-4 py-8">
+    <article className="max-w-4xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-8 rounded-lg mb-8">
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-8 rounded-lg mb-8 shadow-lg">
         <h1 className="text-4xl font-bold text-white mb-4">{post.title}</h1>
         <div className="flex items-center gap-4">
           {post.author.image && (
             <img
               src={post.author.image}
               alt={post.author.name}
-              className="w-12 h-12 rounded-full"
+              className="w-12 h-12 rounded-full border-2 border-white/20"
             />
           )}
           <div>
@@ -155,20 +155,37 @@ export default function BlogPostDetail({ slug }: Props) {
       </div>
 
       {/* Content */}
-      <div className="prose prose-lg dark:prose-invert max-w-none">
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">{post.description}</p>
+      <div className="prose prose-lg max-w-none bg-white dark:bg-gray-900 rounded-lg p-6
+        prose-headings:text-gray-900 dark:prose-headings:text-gray-100
+        prose-h1:text-3xl prose-h1:font-bold
+        prose-h2:text-2xl prose-h2:font-semibold
+        prose-h3:text-xl prose-h3:font-medium
+        prose-p:text-gray-700 dark:prose-p:text-gray-300
+        prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline
+        prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-bold
+        prose-code:text-gray-800 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+        prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-pre:p-4 prose-pre:rounded-lg
+        prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300 prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-700 prose-blockquote:pl-4
+        prose-ul:text-gray-700 dark:prose-ul:text-gray-300
+        prose-ol:text-gray-700 dark:prose-ol:text-gray-300
+        prose-li:text-gray-700 dark:prose-li:text-gray-300
+        prose-table:border-collapse
+        prose-th:border prose-th:border-gray-300 dark:prose-th:border-gray-700 prose-th:p-2 prose-th:bg-gray-100 dark:prose-th:bg-gray-800
+        prose-td:border prose-td:border-gray-300 dark:prose-td:border-gray-700 prose-td:p-2
+        prose-img:rounded-lg prose-img:shadow-md">
+        <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 font-medium leading-relaxed">{post.description}</p>
         <ReactMarkdown>{post.content}</ReactMarkdown>
       </div>
 
       {/* Tags */}
       {post.tags && post.tags.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Etiketler</h2>
+        <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Etiketler</h2>
           <div className="flex flex-wrap gap-2">
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm"
+                className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               >
                 {tag}
               </span>
@@ -179,21 +196,21 @@ export default function BlogPostDetail({ slug }: Props) {
 
       {/* Sources */}
       {post.sources && post.sources.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Kaynaklar</h2>
-          <ul className="list-disc list-inside space-y-2">
+        <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Kaynaklar</h2>
+          <ul className="list-disc list-inside space-y-3">
             {post.sources.map((source, index) => (
-              <li key={index}>
+              <li key={index} className="text-gray-700 dark:text-gray-300">
                 <a
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                  className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                 >
                   {source.title}
                 </a>
                 {source.description && (
-                  <p className="text-gray-600 dark:text-gray-400 text-sm ml-6">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 ml-6">
                     {source.description}
                   </p>
                 )}

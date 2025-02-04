@@ -19,7 +19,7 @@ export default function BlogCard({ post }: Props) {
 
   return (
     <Link href={`/blog/${post.slug}`} onClick={handleClick} className="block h-full">
-      <article className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:scale-[1.02] hover:bg-gray-800">
+      <article className="bg-white dark:bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-100 dark:border-gray-700">
         <div className="relative h-52 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
           <div className="absolute inset-0 flex items-center justify-center p-6">
             <h2 className="text-2xl font-bold text-white text-center line-clamp-2">
@@ -29,11 +29,11 @@ export default function BlogCard({ post }: Props) {
         </div>
         
         <div className="p-8 flex-1 flex flex-col">
-          <p className="text-gray-300 mb-6 line-clamp-3 flex-1 text-lg">
+          <p className="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3 flex-1 text-lg">
             {post.description}
           </p>
           <div className="mt-auto">
-            <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
+            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
               <div className="flex items-center">
                 {post.author.image && (
                   <img
@@ -55,7 +55,7 @@ export default function BlogCard({ post }: Props) {
                 {post.tags.map((tag: string) => (
                   <span
                     key={`${post.slug}-${tag}`}
-                    className="px-3 py-1.5 text-sm bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-700"
+                    className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
                   >
                     {tag}
                   </span>
