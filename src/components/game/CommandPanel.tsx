@@ -207,7 +207,7 @@ export default function CommandPanel() {
     return (
       <div className="fixed inset-0 pointer-events-none z-50">
         {currentLevel === 1 && tutorialStep === 'ileri' && (
-          <div className="absolute right-[400px] top-1/2 transform -translate-y-1/2 
+          <div className="absolute right-[450px] top-[50%] transform -translate-y-1/2 
                        bg-amber-400 text-black p-4 rounded-lg shadow-xl
                        animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
             <div className="arrow-right absolute -right-4 top-1/2 transform -translate-y-1/2" />
@@ -216,7 +216,7 @@ export default function CommandPanel() {
         )}
 
         {currentLevel === 2 && tutorialStep === 'sagaDon' && (
-          <div className="absolute right-[400px] top-1/2 transform -translate-y-1/2 
+          <div className="absolute right-[450px] top-[50%] transform -translate-y-1/2 
                        bg-amber-400 text-black p-4 rounded-lg shadow-xl
                        animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
             <div className="arrow-right absolute -right-4 top-1/2 transform -translate-y-1/2" />
@@ -225,7 +225,7 @@ export default function CommandPanel() {
         )}
 
         {currentLevel === 2 && tutorialStep === 'ileri2' && (
-          <div className="absolute right-[400px] top-1/2 transform -translate-y-1/2 
+          <div className="absolute right-[450px] top-[50%] transform -translate-y-1/2 
                        bg-amber-400 text-black p-4 rounded-lg shadow-xl
                        animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
             <div className="arrow-right absolute -right-4 top-1/2 transform -translate-y-1/2" />
@@ -234,7 +234,7 @@ export default function CommandPanel() {
         )}
 
         {tutorialStep === 'calistir' && (
-          <div className="absolute right-[200px] bottom-[100px] 
+          <div className="absolute right-[200px] bottom-[150px] 
                        bg-amber-400 text-black p-4 rounded-lg shadow-xl
                        animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
             <div className="arrow-down absolute -bottom-4 left-1/2 transform -translate-x-1/2" />
@@ -301,21 +301,22 @@ export default function CommandPanel() {
                 }
               }}
               disabled={isRunning || commands.length >= maxSteps}
-              className={`relative px-3 py-2
-                        ${isHighlighted 
-                          ? 'bg-gradient-to-b from-amber-500/90 to-amber-600/90 hover:from-amber-400/90 hover:to-amber-500/90 text-white animate-[pulse_2s_ease-in-out_infinite] ring-2 ring-amber-400/50 scale-110'
-                          : 'bg-gradient-to-b from-amber-900/80 to-amber-950/80 hover:from-amber-800/80 hover:to-amber-900/80 text-amber-400'}
-                        disabled:from-gray-800/50 disabled:to-gray-900/50
-                        rounded-lg transition-all
-                        group font-mono text-sm sm:text-base
-                        border border-amber-700/30 hover:border-amber-500/50
-                        hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]
-                        active:shadow-[0_0_30px_rgba(245,158,11,0.3)]
-                        disabled:hover:translate-y-0 disabled:hover:border-gray-800/30
-                        disabled:text-gray-600 disabled:hover:shadow-none
-                        backdrop-blur-sm
-                        w-full truncate
-                        ${isHighlighted ? 'z-10' : ''}`}
+              className={`
+                relative px-3 py-2
+                ${isHighlighted 
+                  ? 'bg-gradient-to-b from-amber-500/90 to-amber-600/90 hover:from-amber-400/90 hover:to-amber-500/90 text-white animate-[pulse_2s_ease-in-out_infinite] ring-2 ring-amber-400/50 scale-110 z-20'
+                  : 'bg-gradient-to-b from-amber-900/80 to-amber-950/80 hover:from-amber-800/80 hover:to-amber-900/80 text-amber-400'}
+                disabled:from-gray-800/50 disabled:to-gray-900/50
+                rounded-lg transition-all
+                group font-mono text-sm sm:text-base
+                border border-amber-700/30 hover:border-amber-500/50
+                hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]
+                active:shadow-[0_0_30px_rgba(245,158,11,0.3)]
+                disabled:hover:translate-y-0 disabled:hover:border-gray-800/30
+                disabled:text-gray-600 disabled:hover:shadow-none
+                backdrop-blur-sm
+                w-full truncate
+              `}
               title={description}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">

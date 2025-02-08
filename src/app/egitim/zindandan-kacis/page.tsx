@@ -94,22 +94,22 @@ export default function ZindandanKacisPage() {
   return (
     <main className="h-screen overflow-hidden bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-950 via-stone-950 to-gray-950">
       {/* Arka Plan Efektleri */}
-      <div className="fixed inset-0 opacity-30">
+      <div className="fixed inset-0 opacity-30 pointer-events-none">
         <div className="absolute inset-0 bg-[url('/images/dungeon-texture.png')] bg-repeat opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-900/5 to-amber-900/10" />
       </div>
 
       {/* Meşale Efektleri */}
-      <div className="fixed top-0 left-0 w-32 h-32 animate-[torchLight_4s_ease-in-out_infinite]">
+      <div className="fixed top-0 left-0 w-32 h-32 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-radial from-amber-500/20 via-amber-500/5 to-transparent" />
       </div>
-      <div className="fixed top-0 right-0 w-32 h-32 animate-[torchLight_4s_ease-in-out_infinite_0.5s]">
+      <div className="fixed top-0 right-0 w-32 h-32 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-radial from-amber-500/20 via-amber-500/5 to-transparent" />
       </div>
 
-      <div className="h-full flex flex-col p-2">
+      <div className="h-full flex flex-col p-2 relative">
         {/* Üst Alan - Seviyeler */}
-        <section className="flex-none mb-1">
+        <section className="flex-none mb-1 relative z-50">
           <div className="relative">
             {/* Kaydırma Göstergesi */}
             <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
@@ -264,18 +264,18 @@ export default function ZindandanKacisPage() {
         <div className="flex gap-2 flex-1 min-h-0 h-[calc(100vh-140px)]">
           {/* Sol Panel - Oyun Alanı */}
           <div className="flex-1 bg-gray-900/50 rounded-xl backdrop-blur-sm
-                       border-2 border-stone-800/50 relative overflow-hidden flex items-center justify-center">
+                        border-2 border-stone-800/50 relative overflow-hidden flex items-center justify-center z-0">
             {/* Meşale Efektleri */}
-            <div className="absolute top-0 left-0 w-32 h-32">
+            <div className="absolute top-0 left-0 w-32 h-32 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-radial from-amber-500/10 via-amber-500/5 to-transparent 
                            animate-[torchLight_4s_ease-in-out_infinite]" />
             </div>
-            <div className="absolute top-0 right-0 w-32 h-32">
+            <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-radial from-amber-500/10 via-amber-500/5 to-transparent 
                            animate-[torchLight_4s_ease-in-out_infinite_0.5s]" />
             </div>
 
-            <div className="aspect-square h-[calc(100vh-180px)] max-h-[800px]">
+            <div className="aspect-square h-[calc(100vh-180px)] max-h-[800px] relative z-0">
               <GameScene />
             </div>
           </div>
