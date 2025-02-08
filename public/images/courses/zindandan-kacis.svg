@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="450" viewBox="0 0 800 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Arka plan -->
+  <rect width="800" height="450" fill="#1a1b26"/>
+  
+  <!-- Zindan duvarları -->
+  <rect x="50" y="50" width="700" height="350" stroke="#4a5568" stroke-width="4" fill="#2d3748"/>
+  
+  <!-- Izgara çizgileri -->
+  <g stroke="#4a5568" stroke-width="2">
+    <line x1="200" y1="50" x2="200" y2="400"/>
+    <line x1="400" y1="50" x2="400" y2="400"/>
+    <line x1="600" y1="50" x2="600" y2="400"/>
+    <line x1="50" y1="150" x2="750" y2="150"/>
+    <line x1="50" y1="250" x2="750" y2="250"/>
+    <line x1="50" y1="350" x2="750" y2="350"/>
+  </g>
+  
+  <!-- Karakter -->
+  <rect x="100" y="200" width="50" height="50" fill="#3182ce"/>
+  <polygon points="125,190 145,210 125,230 105,210" fill="#63b3ed"/>
+  
+  <!-- Kapı -->
+  <rect x="650" y="175" width="50" height="100" fill="#48bb78"/>
+  <circle cx="660" cy="225" r="5" fill="#c6f6d5"/>
+  
+  <!-- Engeller -->
+  <rect x="300" y="150" width="50" height="50" fill="#9b2c2c"/>
+  <rect x="450" y="250" width="50" height="50" fill="#9b2c2c"/>
+  
+  <!-- Parıltı efektleri -->
+  <circle cx="125" cy="225" r="100" fill="url(#glow1)" opacity="0.3"/>
+  <circle cx="675" cy="225" r="100" fill="url(#glow2)" opacity="0.3"/>
+  
+  <!-- Gradyanlar -->
+  <defs>
+    <radialGradient id="glow1" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#3182ce"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#48bb78"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Metin -->
+  <text x="400" y="430" text-anchor="middle" fill="#e2e8f0" font-family="Arial" font-size="24">
+    Zindandan Kaçış
+  </text>
+</svg> 

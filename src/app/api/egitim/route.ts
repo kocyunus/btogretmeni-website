@@ -29,7 +29,7 @@ export async function GET() {
           slug: "zindandan-kacis",
           title: "Zindandan Kaçış",
           description: "Kodlama mantığını eğlenceli bir macera oyunu ile öğrenin! Karakterinizi zindandan kurtarmak için algoritma ve programlama becerilerinizi kullanın.",
-          imageUrl: "/images/courses/zindandan-kacis.png",
+          imageUrl: "/images/courses/zindandan-kacis.svg",
           level: "beginner",
           duration: 2,
           features: [
