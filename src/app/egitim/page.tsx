@@ -16,18 +16,18 @@ async function getEducationContent() {
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     const host = process.env.VERCEL_URL 
       ? process.env.VERCEL_URL 
-      : `localhost:${process.env.NEXT_PUBLIC_PORT || 3002}`;
+      : `localhost:${process.env.PORT || 3002}`;
 
     const baseUrl = `${protocol}://${host}`;
 
     console.log('🔍 API İsteği Başlıyor:', {
       baseUrl,
-      endpoint: `/api/egitim`,
+      endpoint: '/api/egitim',
       isVercel: !!process.env.VERCEL_URL,
       nodeEnv: process.env.NODE_ENV
     });
 
-    const response = await fetch(`/api/egitim`, {
+    const response = await fetch(`${baseUrl}/api/egitim`, {
       cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
