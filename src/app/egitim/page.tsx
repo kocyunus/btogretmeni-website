@@ -13,6 +13,11 @@ export const metadata: Metadata = {
 async function getEducationContent() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    console.log('🔍 API İsteği Başlıyor:', {
+      baseUrl,
+      endpoint: `${baseUrl}/api/egitim`,
+      env: process.env.NEXT_PUBLIC_API_URL
+    });
 
     const response = await fetch(`${baseUrl}/api/egitim`, {
       cache: 'no-store',
@@ -22,14 +27,26 @@ async function getEducationContent() {
       next: { revalidate: 0 }
     });
 
+    console.log('📡 API Yanıtı:', {
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('✅ API Verisi:', data);
     return data;
   } catch (error) {
-    console.error("Eğitim içerikleri yüklenirken hata:", error);
+    console.error("❌ Eğitim içerikleri yüklenirken hata:", {
+      error,
+      message: error instanceof Error ? error.message : 'Bilinmeyen hata',
+      stack: error instanceof Error ? error.stack : undefined
+    });
     throw error;
   }
 }

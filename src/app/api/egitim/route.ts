@@ -8,6 +8,12 @@ export async function GET() {
     const host = headersList.get('host') || '';
     const origin = headersList.get('origin') || '';
 
+    console.log('🔒 API Güvenlik Kontrolü:', {
+      host,
+      origin,
+      headers: Object.fromEntries(headersList.entries())
+    });
+
     // Güvenlik kontrolleri - production için devre dışı bırakıldı
     // if (!host.includes('localhost') && !host.includes('vercel.app') && !host.includes('kocyunus.com')) {
     //   return new NextResponse(
@@ -44,6 +50,15 @@ export async function GET() {
       ]
     };
 
+    console.log('✅ API Yanıt Hazırlanıyor:', {
+      coursesCount: courses.courses.length,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, max-age=0',
+      }
+    });
+
     return new NextResponse(JSON.stringify(courses), {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -52,7 +67,11 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('❌ API Hatası:', {
+      error,
+      message: error instanceof Error ? error.message : 'Bilinmeyen hata',
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return new NextResponse(
       JSON.stringify({ error: 'Internal Server Error' }), 
       { status: 500 }
