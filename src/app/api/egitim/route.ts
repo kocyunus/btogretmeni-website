@@ -8,13 +8,13 @@ export async function GET() {
     const host = headersList.get('host') || '';
     const origin = headersList.get('origin') || '';
 
-    // Güvenlik kontrolleri
-    if (!host.includes('localhost') && !host.includes('vercel.app') && !host.includes('kocyunus.com')) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Unauthorized' }), 
-        { status: 401 }
-      );
-    }
+    // Güvenlik kontrolleri - production için devre dışı bırakıldı
+    // if (!host.includes('localhost') && !host.includes('vercel.app') && !host.includes('kocyunus.com')) {
+    //   return new NextResponse(
+    //     JSON.stringify({ error: 'Unauthorized' }), 
+    //     { status: 401 }
+    //   );
+    // }
 
     const courses = {
       courses: [
