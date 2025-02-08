@@ -12,34 +12,11 @@ export const metadata: Metadata = {
 
 async function getEducationContent() {
   try {
-    // API endpoint'i belirle
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const host = process.env.VERCEL_URL 
-      ? process.env.VERCEL_URL 
-      : `localhost:${process.env.PORT || 3002}`;
+    console.log('🔍 API İsteği Başlıyor');
 
-    const baseUrl = `${protocol}://${host}`;
-
-    console.log('🔍 API İsteği Başlıyor:', {
-      baseUrl,
-      endpoint: '/api/egitim',
-      isVercel: !!process.env.VERCEL_URL,
-      nodeEnv: process.env.NODE_ENV
-    });
-
-    const response = await fetch(`${baseUrl}/api/egitim`, {
+    const response = await fetch('/api/egitim', {
       cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       next: { revalidate: 0 }
-    });
-
-    console.log('📡 API Yanıtı:', {
-      status: response.status,
-      ok: response.ok,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
     });
 
     if (!response.ok) {
@@ -50,11 +27,7 @@ async function getEducationContent() {
     console.log('✅ API Verisi:', data);
     return data;
   } catch (error) {
-    console.error("❌ Eğitim içerikleri yüklenirken hata:", {
-      error,
-      message: error instanceof Error ? error.message : 'Bilinmeyen hata',
-      stack: error instanceof Error ? error.stack : undefined
-    });
+    console.error("❌ Eğitim içerikleri yüklenirken hata:", error);
     throw error;
   }
 }

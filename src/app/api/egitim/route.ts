@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
-import { headers } from 'next/headers';
 
 export async function GET() {
   try {
-    const headersList = headers();
-    const host = headersList.get('host') || '';
-
     const courses = {
       courses: [
         {
@@ -31,18 +27,11 @@ export async function GET() {
       ]
     };
 
-    return new NextResponse(JSON.stringify(courses), {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Content-Type': 'application/json',
-      },
-    });
+    return NextResponse.json(courses);
   } catch (error) {
     console.error('❌ API Hatası:', error);
-    return new NextResponse(
-      JSON.stringify({ error: 'Internal Server Error' }), 
+    return NextResponse.json(
+      { error: 'Internal Server Error' }, 
       { status: 500 }
     );
   }
