@@ -14,13 +14,14 @@ async function getEducationContent() {
   try {
     const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
-      : `http://localhost:3002`;
+      : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
     const response = await fetch(`${baseUrl}/api/egitim`, {
       cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
       },
+      next: { revalidate: 0 }
     });
 
     if (!response.ok) {
