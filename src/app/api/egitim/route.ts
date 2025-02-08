@@ -3,6 +3,9 @@ import { headers } from 'next/headers';
 
 export async function GET() {
   try {
+    const headersList = headers();
+    const host = headersList.get('host') || '';
+
     const courses = {
       courses: [
         {
@@ -30,8 +33,10 @@ export async function GET() {
 
     return new NextResponse(JSON.stringify(courses), {
       headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, max-age=0',
       },
     });
   } catch (error) {
@@ -41,4 +46,14 @@ export async function GET() {
       { status: 500 }
     );
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 } 
