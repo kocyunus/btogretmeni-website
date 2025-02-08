@@ -12,11 +12,16 @@ export const metadata: Metadata = {
 
 async function getEducationContent() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    // Vercel URL'sini veya local development URL'sini kullan
+    const protocol = process.env.VERCEL_URL ? 'https' : 'http';
+    const host = process.env.VERCEL_URL || `localhost:${process.env.NEXT_PUBLIC_PORT || 3002}`;
+    const baseUrl = `${protocol}://${host}`;
+
     console.log('🔍 API İsteği Başlıyor:', {
       baseUrl,
       endpoint: `${baseUrl}/api/egitim`,
-      env: process.env.NEXT_PUBLIC_API_URL
+      isVercel: !!process.env.VERCEL_URL,
+      port: process.env.NEXT_PUBLIC_PORT
     });
 
     const response = await fetch(`${baseUrl}/api/egitim`, {
