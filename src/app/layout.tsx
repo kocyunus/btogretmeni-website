@@ -7,14 +7,14 @@ import Navbar from '@/components/Navbar';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://btogretmeni.vercel.app'),
+  metadataBase: new URL('https://www.kocyunus.com'),
   title: {
     default: "BT Öğretmeni",
     template: "%s | BT Öğretmeni"
   },
   description: "Yazılım, robotik ve teknoloji eğitimleri ile kendinizi geliştirin. Oyunlaştırılmış kodlama öğrenme platformu.",
   keywords: ["kodlama", "programlama", "eğitim", "yazılım", "robotik", "teknoloji", "bt öğretmeni", "bilişim teknolojileri"],
-  authors: [{ name: "Yunus KOÇ", url: "https://btogretmeni.vercel.app" }],
+  authors: [{ name: "Yunus KOÇ", url: "https://www.kocyunus.com" }],
   creator: "Yunus KOÇ",
   publisher: "BT Öğretmeni",
   robots: {
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://btogretmeni.vercel.app",
+    url: "https://www.kocyunus.com",
     siteName: "BT Öğretmeni",
     title: "BT Öğretmeni - Kodlama Öğrenme Platformu",
     description: "Yazılım, robotik ve teknoloji eğitimleri ile kendinizi geliştirin. Oyunlaştırılmış kodlama öğrenme platformu.",
     images: [
       {
-        url: "https://btogretmeni.vercel.app/images/og-image.png",
+        url: "https://www.kocyunus.com/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "BT Öğretmeni"
@@ -46,13 +46,13 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'BT Öğretmeni - Kodlama Öğrenme Platformu',
     description: 'Yazılım, robotik ve teknoloji eğitimleri ile kendinizi geliştirin.',
-    images: ['https://btogretmeni.vercel.app/images/og-image.png'],
+    images: ['https://www.kocyunus.com/images/og-image.png'],
   },
   verification: {
-    google: "google-site-verification-code", // Google Search Console doğrulama kodu buraya gelecek
+    google: "BURAYA_GOOGLE_DOGRULAMA_KODUNUZU_YAPIŞTIRIN",
   },
   alternates: {
-    canonical: "https://btogretmeni.vercel.app",
+    canonical: "https://www.kocyunus.com",
   }
 };
 
