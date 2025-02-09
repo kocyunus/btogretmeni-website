@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import Course from "@/models/Course";
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -7,34 +9,12 @@ export async function GET() {
   console.log('📚 Eğitim API endpoint çağrıldı');
   
   try {
-    const courses = {
-      courses: [
-        {
-          _id: "1",
-          slug: "zindandan-kacis",
-          title: "Zindandan Kaçış",
-          description: "Kodlama mantığını eğlenceli bir macera oyunu ile öğrenin! Karakterinizi zindandan kurtarmak için algoritma ve programlama becerilerinizi kullanın.",
-          imageUrl: "/images/courses/zindandan-kacis.svg",
-          level: "beginner",
-          duration: 2,
-          features: [
-            "Temel programlama kavramları",
-            "Algoritma mantığı",
-            "Problem çözme becerileri",
-            "Görsel programlama"
-          ],
-          topics: [
-            "Algoritma",
-            "Kodlama",
-            "Oyun"
-          ]
-        }
-      ]
-    };
+    await connectToDatabase();
+    const courses = await Course.find({}).sort({ createdAt: -1 });
 
     console.log('✅ Eğitim verileri başarıyla döndürüldü:', courses);
 
-    return NextResponse.json(courses, {
+    return NextResponse.json({ courses }, {
       headers: {
         'Cache-Control': 'no-store, must-revalidate',
         'Access-Control-Allow-Origin': '*',

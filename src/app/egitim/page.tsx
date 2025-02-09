@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
+import { connectToDatabase } from "@/lib/mongodb";
+import Course from "@/models/Course";
 
 export const metadata: Metadata = {
   title: "Eğitim | BT Öğretmeni",
@@ -14,22 +16,11 @@ async function getEducationContent() {
   try {
     console.log('🔍 Eğitim içerikleri getiriliyor...');
     
-    const response = await fetch('/api/egitim', {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 0 }
-    });
-
-    if (!response.ok) {
-      console.error('❌ API yanıt hatası:', response.status, response.statusText);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('✅ Eğitim içerikleri başarıyla alındı:', data);
-    return data;
+    await connectToDatabase();
+    const courses = await Course.find({}).sort({ createdAt: -1 });
+    
+    console.log('✅ Eğitim içerikleri başarıyla alındı:', courses);
+    return { courses };
   } catch (error) {
     console.error("❌ Eğitim içerikleri yüklenirken hata:", error);
     throw error;

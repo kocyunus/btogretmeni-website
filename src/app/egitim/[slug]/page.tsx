@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { connectToDatabase } from "@/lib/mongodb";
+import Course from "@/models/Course";
 
 // Metadata
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -23,21 +25,8 @@ async function getCourse(slug: string) {
   try {
     console.log('🔍 Kurs detayları getiriliyor:', slug);
     
-    const response = await fetch('/api/egitim', {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 0 }
-    });
-
-    if (!response.ok) {
-      console.error('❌ API yanıt hatası:', response.status, response.statusText);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const course = data.courses.find((course: any) => course.slug === slug);
+    await connectToDatabase();
+    const course = await Course.findOne({ slug });
     
     if (course) {
       console.log('✅ Kurs detayları başarıyla alındı:', course);
