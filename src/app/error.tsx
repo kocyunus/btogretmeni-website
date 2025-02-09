@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect } from 'react';
+"use client";
 
 export default function Error({
   error,
@@ -9,28 +7,27 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    // Hata loglaması
-    console.error('Sayfa hatası:', error);
-  }, [error]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-lg w-full text-center">
-        <h1 className="text-6xl font-bold text-red-600 dark:text-red-400">Hata</h1>
-        <h2 className="mt-4 text-3xl font-semibold">Bir Şeyler Ters Gitti</h2>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">
-          Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold mb-4">Hata!</h1>
+        <h2 className="text-2xl mb-8">Bir şeyler yanlış gitti</h2>
+        <p className="text-gray-400 mb-8">
+          {error.message || "Beklenmeyen bir hata oluştu."}
         </p>
-        <div className="mt-8">
+        <div className="space-x-4">
           <button
             onClick={reset}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base 
-              font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 
-              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
           >
             Tekrar Dene
           </button>
+          <a
+            href="/"
+            className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors inline-block"
+          >
+            Ana Sayfaya Dön
+          </a>
         </div>
       </div>
     </div>

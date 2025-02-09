@@ -1,3 +1,5 @@
+"use client";
+
 import GameBoard from '@/components/game/GameBoard';
 import CommandPanel from '@/components/game/CommandPanel';
 

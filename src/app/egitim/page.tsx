@@ -17,11 +17,10 @@ async function getEducationContent() {
       : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
     const response = await fetch(`${baseUrl}/api/egitim`, {
-      cache: 'no-store',
+      next: { revalidate: 60 },
       headers: {
         'Content-Type': 'application/json',
-      },
-      next: { revalidate: 0 }
+      }
     });
 
     if (!response.ok) {

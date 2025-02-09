@@ -184,6 +184,7 @@ interface GameState {
   // Karakter durumu
   characterPosition: Position;
   characterDirection: Direction;
+  characterRotation: number;
   
   // Komut sistemi
   commands: Command[];
@@ -199,7 +200,14 @@ interface GameState {
   hasKey: boolean;
   isLevelComplete: boolean;
   showSuccessModal: boolean;
+  showSuccess: boolean;
   levels: typeof gameLevels;
+  levelData: {
+    title: string;
+    walls: { x: number; y: number; }[];
+    breakableWalls: { x: number; y: number; broken: boolean; }[];
+    target: { x: number; y: number; };
+  };
   
   // Tutorial durumu
   isTutorialActive: boolean;
@@ -221,6 +229,7 @@ interface GameState {
   loadLevel: (levelId: number) => void;
   goToNextLevel: () => void;
   breakWall: () => void;
+  handleNextLevel: () => void;
   
   // Tutorial metodları
   startTutorial: () => void;
@@ -270,16 +279,24 @@ export const useGameStore = create<GameState>((set, get) => {
     completedLevels: [] as number[],
     characterPosition: gameLevels[0].startPosition,
     characterDirection: 'east' as Direction,
+    characterRotation: 0,
     commands: [] as Command[],
     isRunning: false,
     hasKey: true,
     isLevelComplete: false,
     showSuccessModal: false,
+    showSuccess: false,
     grid: gameLevels[0].grid,
     startPosition: gameLevels[0].startPosition,
     exitPosition: gameLevels[0].exitPosition,
     maxSteps: gameLevels[0].maxSteps,
     levels: gameLevels,
+    levelData: {
+      title: gameLevels[0].title,
+      walls: [],
+      breakableWalls: [],
+      target: gameLevels[0].exitPosition,
+    },
     
     // Tutorial durumu
     isTutorialActive: false,
@@ -487,12 +504,26 @@ export const useGameStore = create<GameState>((set, get) => {
         set({
           characterPosition: level.startPosition,
           characterDirection: 'east',
+          characterRotation: 0,
           hasKey: true,
           commands: [],
           isRunning: false,
           isLevelComplete: false,
           showSuccessModal: false,
+          showSuccess: false,
           grid: JSON.parse(JSON.stringify(level.grid)), // Derin kopya oluştur
+          startPosition: level.startPosition,
+          exitPosition: level.exitPosition,
+          maxSteps: level.maxSteps,
+          levelData: {
+            title: level.title,
+            walls: [],
+            breakableWalls: [],
+            target: level.exitPosition,
+          },
+          // Tutorial durumunu sıfırla
+          isTutorialActive: false,
+          tutorialStep: 'ileri' as 'ileri' | 'calistir' | 'completed' | 'sagaDon' | 'ileri2',
         });
       }, 100);
     },
@@ -514,15 +545,23 @@ export const useGameStore = create<GameState>((set, get) => {
         currentLevel: levelId,
         characterPosition: level.startPosition,
         characterDirection: 'east',
+        characterRotation: 0,
         commands: [],
         isRunning: false,
         hasKey: true,
         isLevelComplete: false,
         showSuccessModal: false,
+        showSuccess: false,
         grid: JSON.parse(JSON.stringify(level.grid)), // Derin kopya oluştur
         startPosition: level.startPosition,
         exitPosition: level.exitPosition,
         maxSteps: level.maxSteps,
+        levelData: {
+          title: level.title,
+          walls: [],
+          breakableWalls: [],
+          target: level.exitPosition,
+        },
         // Tutorial durumunu sıfırla
         isTutorialActive: false,
         tutorialStep: 'ileri' as 'ileri' | 'calistir' | 'completed' | 'sagaDon' | 'ileri2',
@@ -669,6 +708,11 @@ export const useGameStore = create<GameState>((set, get) => {
           tutorialStep: 'completed' 
         });
       }
+    },
+
+    handleNextLevel: () => {
+      // Bu metodun içeriği, mevcut kodda bulunmamaktadır.
+      // Bu metodun içeriği, mevcut kodda bulunmamaktadır.
     },
   };
 }); 
