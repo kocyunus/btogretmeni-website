@@ -14,8 +14,7 @@ async function getEducationContent() {
   try {
     console.log('🔍 Eğitim içerikleri getiriliyor...');
     
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-    const response = await fetch(`${baseUrl}/api/egitim`, {
+    const response = await fetch('/api/egitim', {
       cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
