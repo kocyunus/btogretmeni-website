@@ -17,7 +17,7 @@ async function getEducationContent() {
       : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
     const response = await fetch(`${baseUrl}/api/egitim`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
       }

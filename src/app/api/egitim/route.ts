@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export async function GET() {
   try {
     const courses = {
@@ -27,7 +30,14 @@ export async function GET() {
       ]
     };
 
-    return NextResponse.json(courses);
+    return NextResponse.json(courses, {
+      headers: {
+        'Cache-Control': 'no-store, must-revalidate',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
   } catch (error) {
     console.error('❌ API Hatası:', error);
     return NextResponse.json(
