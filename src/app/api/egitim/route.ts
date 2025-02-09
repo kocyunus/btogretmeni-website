@@ -4,6 +4,8 @@ export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export async function GET() {
+  console.log('📚 Eğitim API endpoint çağrıldı');
+  
   try {
     const courses = {
       courses: [
@@ -29,6 +31,8 @@ export async function GET() {
         }
       ]
     };
+
+    console.log('✅ Eğitim verileri başarıyla döndürüldü:', courses);
 
     return NextResponse.json(courses, {
       headers: {

@@ -9,44 +9,48 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.kocyunus.com'),
   title: {
-    default: "BT Öğretmeni",
-    template: "%s | BT Öğretmeni"
+    default: "Yunus Koç | BT Öğretmeni - Kodlama ve Teknoloji Eğitimi",
+    template: "%s | Yunus Koç - BT Öğretmeni"
   },
-  description: "Yazılım, robotik ve teknoloji eğitimleri ile kendinizi geliştirin. Oyunlaştırılmış kodlama öğrenme platformu.",
-  keywords: ["kodlama", "programlama", "eğitim", "yazılım", "robotik", "teknoloji", "bt öğretmeni", "bilişim teknolojileri"],
+  description: "Yunus Koç - Bilişim Teknolojileri Öğretmeni. Kodlama, robotik ve teknoloji eğitimleri. Öğrenciler için oyunlaştırılmış kodlama platformu ve eğitim içerikleri.",
+  keywords: ["yunus koç", "kocyunus", "bt öğretmeni yunus", "kodlama eğitimi", "robotik eğitimi", "teknoloji öğretmeni", "bilişim teknolojileri", "online kodlama dersleri", "çocuklar için kodlama"],
   authors: [{ name: "Yunus KOÇ", url: "https://www.kocyunus.com" }],
   creator: "Yunus KOÇ",
-  publisher: "BT Öğretmeni",
+  publisher: "Yunus KOÇ - BT Öğretmeni",
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
-      'max-image-preview': 'large'
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+      'max-snippet': -1,
     },
   },
   openGraph: {
     type: "website",
     locale: "tr_TR",
     url: "https://www.kocyunus.com",
-    siteName: "BT Öğretmeni",
-    title: "BT Öğretmeni - Kodlama Öğrenme Platformu",
-    description: "Yazılım, robotik ve teknoloji eğitimleri ile kendinizi geliştirin. Oyunlaştırılmış kodlama öğrenme platformu.",
+    siteName: "Yunus Koç - BT Öğretmeni",
+    title: "Yunus Koç | BT Öğretmeni - Kodlama ve Teknoloji Eğitimi",
+    description: "Yunus Koç - Bilişim Teknolojileri Öğretmeni. Kodlama, robotik ve teknoloji eğitimleri. Öğrenciler için oyunlaştırılmış kodlama platformu ve eğitim içerikleri.",
     images: [
       {
-        url: "https://www.kocyunus.com/images/og-image.png",
+        url: "https://www.kocyunus.com/images/yunus-koc.jpg",
         width: 1200,
         height: 630,
-        alt: "BT Öğretmeni"
+        alt: "Yunus Koç - BT Öğretmeni"
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BT Öğretmeni - Kodlama Öğrenme Platformu',
-    description: 'Yazılım, robotik ve teknoloji eğitimleri ile kendinizi geliştirin.',
-    images: ['https://www.kocyunus.com/images/og-image.png'],
+    title: 'Yunus Koç | BT Öğretmeni - Kodlama ve Teknoloji Eğitimi',
+    description: 'Kodlama ve teknoloji eğitimi uzmanı Yunus Koç resmi web sitesi',
+    images: ['https://www.kocyunus.com/images/yunus-koc.jpg'],
+    creator: '@yunuskoc',
+    site: '@yunuskoc'
   },
   verification: {
     google: "JNRiDuAE78VIYxwjrKgybW7DdjG22Wwp2ijs35GQTQk",

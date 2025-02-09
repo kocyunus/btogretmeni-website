@@ -21,15 +21,34 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 // Kurs verilerini getir
 async function getCourse(slug: string) {
   try {
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : `http://localhost:3002`;
+    console.log('🔍 Kurs detayları getiriliyor:', slug);
+    
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    const response = await fetch(`${baseUrl}/api/egitim`, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      next: { revalidate: 0 }
+    });
 
-    const response = await fetch(`${baseUrl}/api/egitim`);
+    if (!response.ok) {
+      console.error('❌ API yanıt hatası:', response.status, response.statusText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
-    return data.courses.find((course: any) => course.slug === slug);
+    const course = data.courses.find((course: any) => course.slug === slug);
+    
+    if (course) {
+      console.log('✅ Kurs detayları başarıyla alındı:', course);
+    } else {
+      console.log('⚠️ Kurs bulunamadı:', slug);
+    }
+    
+    return course;
   } catch (error) {
-    console.error("Kurs verileri getirilirken hata:", error);
+    console.error("❌ Kurs verileri getirilirken hata:", error);
     return null;
   }
 }

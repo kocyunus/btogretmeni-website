@@ -12,25 +12,27 @@ export const metadata: Metadata = {
 
 async function getEducationContent() {
   try {
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
+    console.log('🔍 Eğitim içerikleri getiriliyor...');
+    
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
     const response = await fetch(`${baseUrl}/api/egitim`, {
       cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      next: { revalidate: 0 }
     });
 
     if (!response.ok) {
+      console.error('❌ API yanıt hatası:', response.status, response.statusText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('✅ Eğitim içerikleri başarıyla alındı:', data);
     return data;
   } catch (error) {
-    console.error("Eğitim içerikleri yüklenirken hata:", error);
+    console.error("❌ Eğitim içerikleri yüklenirken hata:", error);
     throw error;
   }
 }
