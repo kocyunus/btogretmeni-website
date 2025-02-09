@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     images: ['https://www.kocyunus.com/images/og-image.png'],
   },
   verification: {
-    google: "BURAYA_GOOGLE_DOGRULAMA_KODUNUZU_YAPIŞTIRIN",
+    google: "JNRiDuAE78VIYxwjrKgybW7DdjG22Wwp2ijs35GQTQk",
   },
   alternates: {
     canonical: "https://www.kocyunus.com",
