@@ -110,16 +110,86 @@ npm start
    - Connection string kontrolü
    - Environment variables doğrulama
    - MongoDB servisinin çalıştığından emin olma
+   - IP whitelist kontrolü
+   - Database erişim izinleri
 
 3. **Image optimizasyon hataları**
    - next.config.js ayarlarının kontrolü
    - Image domain whitelist kontrolü
+   - Görsel boyutlarının optimizasyonu
+
+4. **API Endpoint Hataları**
+   - Environment variables kontrolü
+   - CORS ayarlarının kontrolü
+   - Rate limiting ayarlarının kontrolü
+   - Cache ayarlarının kontrolü
+   - API route handler'larının kontrolü
+
+5. **Eğitim İçerikleri Görüntülenme Sorunları**
+   - API endpoint yapılandırması:
+   ```typescript
+   const baseUrl = process.env.VERCEL_URL 
+     ? `https://${process.env.VERCEL_URL}` 
+     : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+   ```
+   - Cache kontrolü:
+   ```typescript
+   const response = await fetch(`${baseUrl}/api/egitim`, {
+     cache: 'no-store',
+     headers: {
+       'Content-Type': 'application/json',
+     },
+     next: { revalidate: 0 }
+   });
+   ```
+   - Error boundary implementasyonu:
+   ```typescript
+   try {
+     const data = await response.json();
+     return data;
+   } catch (error) {
+     console.error("Eğitim içerikleri yüklenirken hata:", error);
+     throw error;
+   }
+   ```
 
 ### Debug Araçları
 - Next.js development tools
 - MongoDB Compass
 - Chrome DevTools
 - React Developer Tools
+- Network tab analizi
+- Console hata takibi
+
+### Geliştirme Kontrol Listesi
+
+1. **Build Öncesi**
+   - TypeScript hataları kontrolü
+   - Lint hataları kontrolü
+   - Test suite çalıştırma
+   - Local build test
+   - Environment variables kontrolü
+
+2. **API Endpoint Kontrolleri**
+   - Endpoint erişilebilirlik testi
+   - Response format kontrolü
+   - Error handling kontrolü
+   - Rate limiting testi
+   - CORS kontrolü
+
+3. **Veritabanı Kontrolleri**
+   - Bağlantı testi
+   - CRUD operasyonları testi
+   - Index performans kontrolü
+   - Query optimizasyonu
+   - Error handling
+
+4. **Frontend Kontrolleri**
+   - Responsive tasarım testi
+   - Tema geçiş kontrolü
+   - Loading state kontrolü
+   - Error state kontrolü
+   - UI/UX tutarlılığı
 
 ## Test
 

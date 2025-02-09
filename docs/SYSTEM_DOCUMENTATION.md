@@ -446,6 +446,10 @@ JWT_SECRET=your-jwt-secret-key
 # Email Ayarları
 EMAIL_USER=your-email@example.com
 EMAIL_PASS=your-email-password
+
+# Vercel URL
+VERCEL_URL=your-vercel-url
+NEXT_PUBLIC_API_URL=your-api-url
 ```
 
 ### Sık Karşılaşılan Hatalar ve Çözümleri
@@ -454,7 +458,10 @@ EMAIL_PASS=your-email-password
 ```
 Error: MongoDB bağlantı bilgisi eksik
 ```
-**Çözüm:** Vercel'de environment variables'ların doğru ayarlandığından emin olun.
+**Çözüm:** 
+- Vercel'de environment variables'ların doğru ayarlandığından emin olun
+- MongoDB URI'nin geçerli olduğunu kontrol edin
+- IP whitelist ayarlarını kontrol edin
 
 2. Build Hataları
 ```
@@ -464,6 +471,54 @@ Error: Command "npm run build" exited with 1
 - Local'de build'i test edin
 - Environment variables'ları kontrol edin
 - Bağımlılıkları güncelleyin
+- TypeScript hatalarını düzeltin
+
+3. API Endpoint Hataları
+```
+Error: Failed to fetch API endpoint
+```
+**Çözüm:**
+- API URL'lerinin doğru yapılandırıldığından emin olun
+- CORS ayarlarını kontrol edin
+- Rate limiting ayarlarını kontrol edin
+
+4. Eğitim İçerikleri Görüntülenme Hataları
+```
+Error: Eğitim içerikleri yüklenemedi
+```
+**Çözüm:**
+- API endpoint'in doğru çalıştığından emin olun
+- MongoDB bağlantısını kontrol edin
+- Cache ayarlarını kontrol edin:
+```typescript
+const response = await fetch(`${baseUrl}/api/egitim`, {
+  cache: 'no-store',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  next: { revalidate: 0 }
+});
+```
+
+### Deployment Kontrol Listesi
+
+1. Environment Variables
+- [ ] MongoDB URI ayarlandı
+- [ ] API URL'leri yapılandırıldı
+- [ ] Admin bilgileri tanımlandı
+- [ ] JWT Secret key ayarlandı
+
+2. Build Öncesi Kontroller
+- [ ] TypeScript hataları giderildi
+- [ ] Lint hataları düzeltildi
+- [ ] Test suite çalıştırıldı
+- [ ] Local build test edildi
+
+3. Deployment Sonrası Kontroller
+- [ ] API endpoints çalışıyor
+- [ ] MongoDB bağlantısı aktif
+- [ ] Eğitim içerikleri görüntüleniyor
+- [ ] Cache mekanizması doğru çalışıyor
 
 ## Monitoring ve Logging
 

@@ -261,10 +261,10 @@ export default function ZindandanKacisPage() {
         </section>
 
         {/* Alt Alan - Oyun ve Komutlar */}
-        <div className="flex gap-2 flex-1 min-h-0 h-[calc(100vh-140px)]">
+        <div className="flex flex-col lg:flex-row gap-2 flex-1 min-h-0">
           {/* Sol Panel - Oyun Alanı */}
-          <div className="flex-1 bg-gray-900/50 rounded-xl backdrop-blur-sm
-                        border-2 border-stone-800/50 relative overflow-hidden flex items-center justify-center z-0">
+          <div className="flex-1 min-h-[50vh] lg:min-h-0 bg-gray-900/50 rounded-xl backdrop-blur-sm
+                      border-2 border-stone-800/50 relative overflow-hidden flex items-center justify-center z-0">
             {/* Meşale Efektleri */}
             <div className="absolute top-0 left-0 w-32 h-32 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-radial from-amber-500/10 via-amber-500/5 to-transparent 
@@ -275,13 +275,13 @@ export default function ZindandanKacisPage() {
                            animate-[torchLight_4s_ease-in-out_infinite_0.5s]" />
             </div>
 
-            <div className="aspect-square h-[calc(100vh-180px)] max-h-[800px] relative z-0">
+            <div className="w-full h-full lg:aspect-square lg:h-[calc(100vh-180px)] lg:max-h-[800px] relative z-0">
               <GameScene />
             </div>
           </div>
 
           {/* Sağ Panel - Komut Paneli */}
-          <div className="w-[350px]">
+          <div className="lg:w-[350px] w-full h-[40vh] lg:h-auto">
             <CommandPanel />
           </div>
         </div>
