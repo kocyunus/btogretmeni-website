@@ -256,3 +256,142 @@ function StrictModeDroppable({ children, ...props }) {
 - Geçersiz hedef kontrolü
 - Benzersiz ID çakışma kontrolü
 - Strict Mode uyumluluk kontrolleri 
+
+## Eğitim Sistemi
+
+### Kurs Modeli
+```typescript
+// MongoDB Şeması
+const courseSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  slug: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  imageUrl: {
+    type: String,
+    required: true
+  },
+  level: {
+    type: String,
+    enum: ['beginner', 'intermediate', 'advanced'],
+    default: 'beginner'
+  },
+  duration: {
+    type: Number,
+    required: true
+  },
+  features: [{
+    type: String
+  }],
+  topics: [{
+    type: String
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+// Otomatik güncelleme tarihi
+courseSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+```
+
+### Kurs Listesi Görünümü
+```typescript
+// Kurs Kartı Bileşeni
+<div className="bg-card hover:bg-card/90 rounded-xl p-6 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl">
+  {/* Görsel */}
+  <div className="relative aspect-video rounded-lg overflow-hidden">
+    <Image
+      src={course.imageUrl}
+      alt={course.title}
+      fill
+      className="object-cover"
+    />
+  </div>
+
+  {/* İçerik */}
+  <div className="mt-4">
+    <h3 className="text-2xl font-bold">{course.title}</h3>
+    <p className="text-muted-foreground">{course.description}</p>
+    
+    {/* Özellikler */}
+    <div className="grid grid-cols-2 gap-2 mt-4">
+      {course.features.map((feature, index) => (
+        <div key={index} className="flex items-center text-sm">
+          <CheckIcon className="w-4 h-4 mr-2" />
+          {feature}
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+```
+
+### Veri Yönetimi
+```typescript
+// Kurs Verilerini Getir
+async function getEducationContent() {
+  try {
+    await connectToDatabase();
+    const courses = await Course.find({}).sort({ createdAt: -1 });
+    return { courses };
+  } catch (error) {
+    console.error("Eğitim içerikleri yüklenirken hata:", error);
+    throw error;
+  }
+}
+
+// Tekil Kurs Detayı
+async function getCourse(slug: string) {
+  try {
+    await connectToDatabase();
+    const course = await Course.findOne({ slug });
+    return course;
+  } catch (error) {
+    console.error("Kurs detayları getirilirken hata:", error);
+    return null;
+  }
+}
+```
+
+### Hata Yönetimi
+```typescript
+// Veri Yükleme Hatası
+if (!educationData?.courses?.length) {
+  return (
+    <div className="text-center p-8">
+      <p className="text-amber-400">
+        Henüz eğitim içeriği bulunmamaktadır.
+      </p>
+    </div>
+  );
+}
+
+// API Hatası
+catch (error) {
+  return (
+    <div className="rounded-lg bg-red-500/10 p-4 text-red-500">
+      <p>Eğitim içerikleri yüklenirken bir hata oluştu.</p>
+      <p className="text-sm mt-2 text-red-400">
+        {error instanceof Error ? error.message : 'Bilinmeyen hata'}
+      </p>
+    </div>
+  );
+} 

@@ -1,95 +1,83 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import Confetti from 'react-confetti';
 import { useGameStore } from '@/store/gameStore';
+import { StarIcon } from '@heroicons/react/24/solid';
 
 export default function SuccessModal() {
-  const isLevelComplete = useGameStore((state) => state.isLevelComplete);
-  const showSuccessModal = useGameStore((state) => state.showSuccessModal);
-  const resetLevel = useGameStore((state) => state.resetLevel);
-  const goToNextLevel = useGameStore((state) => state.goToNextLevel);
+  const [mounted, setMounted] = useState(false);
   const currentLevel = useGameStore((state) => state.currentLevel);
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  // Maksimum seviye sayısını güncelle
-  const MAX_LEVEL = 11;
-  const isLastLevel = currentLevel === MAX_LEVEL;
+  const levels = useGameStore((state) => state.levels);
+  const loadLevel = useGameStore((state) => state.loadLevel);
+  const completeLevel = useGameStore((state) => state.completeLevel);
 
   useEffect(() => {
-    if (showSuccessModal) {
-      setShowConfetti(true);
-      // 5 saniye sonra konfetileri kaldır
-      const timer = setTimeout(() => setShowConfetti(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccessModal]);
+    setMounted(true);
+  }, []);
 
-  if (!showSuccessModal) return null;
+  if (!mounted) {
+    return null;
+  }
+
+  const handleNextLevel = () => {
+    completeLevel(currentLevel);
+    loadLevel(currentLevel + 1);
+  };
+
+  const handleRetry = () => {
+    loadLevel(currentLevel);
+  };
 
   return (
-    <>
-      {/* Konfeti Efekti */}
-      {showConfetti && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-          recycle={false}
-          numberOfPieces={200}
-        />
-      )}
-
-      {/* Başarı Modalı */}
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50
-                    animate-[fadeIn_0.5s_ease-out_forwards]">
-        <div className="bg-card p-8 rounded-xl shadow-2xl max-w-md w-full mx-4
-                     animate-[scaleIn_0.5s_ease-out_forwards]">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold mb-2">🎉 Tebrikler! 🎉</h2>
-            <p className="text-xl text-muted-foreground mb-6">
-              {isLastLevel 
-                ? "Tüm seviyeleri başarıyla tamamladın!"
-                : `${currentLevel}. seviyeyi başarıyla tamamladın!`}
-            </p>
-
-            <div className="flex flex-col gap-3">
-              {!isLastLevel && (
-                <button
-                  onClick={() => {
-                    goToNextLevel();
-                    setShowConfetti(false);
-                  }}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium text-lg transition-colors"
-                >
-                  Sonraki Seviye
-                </button>
-              )}
-
-              <button
-                onClick={() => {
-                  resetLevel();
-                  setShowConfetti(false);
-                }}
-                className="bg-stone-700 hover:bg-stone-600 text-white px-6 py-3 rounded-lg font-medium text-lg transition-colors"
-              >
-                {isLastLevel ? "Seviyeyi Tekrarla" : "Tekrar Oyna"}
-              </button>
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
+      <div className="bg-gray-900/90 rounded-xl border-2 border-amber-500/50 p-6 max-w-md w-full mx-4">
+        <div className="text-center">
+          {/* Başarı İkonu */}
+          <div className="flex justify-center mb-4">
+            <div className="relative">
+              <StarIcon className="w-16 h-16 text-amber-500 animate-[spin_3s_linear_infinite]" />
+              <StarIcon className="absolute inset-0 w-16 h-16 text-amber-400 animate-[spin_2s_linear_infinite]" />
+              <StarIcon className="absolute inset-0 w-16 h-16 text-amber-300 animate-[spin_4s_linear_infinite]" />
             </div>
+          </div>
+
+          {/* Başlık */}
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Tebrikler! 🎉
+          </h2>
+
+          {/* Alt Başlık */}
+          <p className="text-gray-400 mb-6">
+            {levels[currentLevel - 1].title} seviyesini tamamladınız!
+          </p>
+
+          {/* Butonlar */}
+          <div className="flex flex-col gap-2">
+            {currentLevel < levels.length && (
+              <button
+                onClick={handleNextLevel}
+                className="w-full py-3 px-4 rounded-lg bg-gradient-to-b from-amber-600 to-amber-700
+                       hover:from-amber-500 hover:to-amber-600
+                       text-white font-medium
+                       transition-all duration-200
+                       flex items-center justify-center gap-2"
+              >
+                Sonraki Seviye
+              </button>
+            )}
+            <button
+              onClick={handleRetry}
+              className="w-full py-3 px-4 rounded-lg bg-gradient-to-b from-gray-700 to-gray-800
+                     hover:from-gray-600 hover:to-gray-700
+                     text-white font-medium
+                     transition-all duration-200
+                     flex items-center justify-center gap-2"
+            >
+              Tekrar Dene
+            </button>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-          from { transform: scale(0.8); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
-    </>
+    </div>
   );
 } 

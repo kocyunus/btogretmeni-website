@@ -56,12 +56,16 @@ interface Project {
 
 // Eğitim Şeması
 interface Course {
-  id: string;
   title: string;
+  slug: string;
   description: string;
-  duration: number;
+  imageUrl: string;
   level: 'beginner' | 'intermediate' | 'advanced';
+  duration: number;
+  features: string[];
   topics: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
@@ -126,11 +130,20 @@ interface Course {
   duration: number;
   features: string[];
   topics: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Response
 {
   courses: Course[];
+}
+
+// GET /api/egitim/seed
+// Yeni kurs oluşturma (sadece development ortamında)
+{
+  message: string;
+  course?: Course;
 }
 
 // Error Handling
@@ -141,42 +154,41 @@ interface ErrorResponse {
 }
 ```
 
-### API Endpoint Yapılandırması
+### Veri Erişim Stratejisi
 ```typescript
-// Base URL Yapılandırması
-const getBaseUrl = () => {
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+// MongoDB Bağlantısı
+const connectToDatabase = async () => {
+  try {
+    if (mongoose.connection.readyState >= 1) return;
+    await mongoose.connect(process.env.MONGODB_URI!);
+    console.log('[INFO] MongoDB bağlantısı başarılı');
+  } catch (error) {
+    console.error('[ERROR] MongoDB bağlantı hatası:', error);
+    throw error;
   }
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 };
 
-// API İstek Yapılandırması
-const fetchConfig = {
-  cache: 'no-store' as RequestCache,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  next: { revalidate: 0 }
-};
+// Veri Çekme Örneği
+async function getData() {
+  await connectToDatabase();
+  const data = await Model.find().sort({ createdAt: -1 });
+  return data;
+}
 
 // Error Handling
-const handleApiError = (error: unknown) => {
-  console.error("API Hatası:", error);
-  throw new Error(error instanceof Error ? error.message : 'Bilinmeyen hata');
+const handleDatabaseError = (error: unknown) => {
+  console.error("[ERROR] Veritabanı hatası:", error);
+  throw new Error(error instanceof Error ? error.message : 'Veritabanı hatası');
 };
 ```
 
 ### Cache Stratejisi
 ```typescript
-// Statik Sayfalar
-export const revalidate = 3600; // 1 saat
-
-// Dinamik Sayfalar
+// Server-side Rendering için
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
-// API Routes
+// API Routes için
 export const config = {
   api: {
     bodyParser: {
@@ -184,6 +196,15 @@ export const config = {
     },
     externalResolver: true,
   },
+};
+
+// Fetch İstekleri için
+const fetchConfig = {
+  cache: 'no-store' as RequestCache,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  next: { revalidate: 0 }
 };
 ```
 
@@ -199,11 +220,7 @@ export async function handleApiRequest<T>(
     return await request();
   } catch (error) {
     console.error("API Hatası:", error);
-    throw new Error(
-      error instanceof Error 
-        ? error.message 
-        : 'API isteği sırasında bir hata oluştu'
-    );
+    throw new Error(error instanceof Error ? error.message : 'Bilinmeyen hata');
   }
 }
 ```

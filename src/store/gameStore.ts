@@ -2,9 +2,9 @@
 
 import { create } from 'zustand';
 import { StateCreator } from 'zustand';
+import { Command, GameState, Level } from '@/types/game';
 
 export type Direction = 'north' | 'east' | 'south' | 'west';
-export type Command = 'ileri()' | 'sağaDön()' | 'solaDön()' | 'kır()';
 
 interface Position {
   x: number;
@@ -12,171 +12,69 @@ interface Position {
 }
 
 // Seviye verileri
-const gameLevels = [
+const gameLevels: Level[] = [
   {
     id: 1,
-    title: "Başlangıç",
-    description: "Temel hareketleri öğren",
+    title: "Temel Hareketler",
+    description: "Karakteri hareket ettirmeyi ve basit komutları öğrenin",
+    maxCommands: 5,
     grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 2, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
+      ['wall', 'wall', 'wall', 'wall', 'wall'],
+      ['wall', 'empty', 'empty', 'empty', 'wall'],
+      ['wall', 'empty', 'empty', 'empty', 'wall'],
+      ['wall', 'empty', 'empty', 'target', 'wall'],
+      ['wall', 'wall', 'wall', 'wall', 'wall'],
     ],
-    startPosition: { x: 2, y: 2 },
-    exitPosition: { x: 3, y: 2 },
-    maxSteps: 1,
+    playerPosition: { x: 1, y: 1 },
+    playerDirection: 'right',
+    targetPosition: { x: 3, y: 3 },
+    obstacles: [],
+    enemies: [],
   },
   {
     id: 2,
-    title: "Dönüşler",
-    description: "Dönüş komutlarını kullanmayı öğren",
+    title: "Döngüler",
+    description: "Tekrarlı hareketleri döngülerle kontrol edin",
+    maxCommands: 8,
     grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 0, 2, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
+      ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
+      ['wall', 'empty', 'empty', 'empty', 'empty', 'empty', 'wall'],
+      ['wall', 'empty', 'wall', 'wall', 'wall', 'empty', 'wall'],
+      ['wall', 'empty', 'empty', 'empty', 'empty', 'target', 'wall'],
+      ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
     ],
-    startPosition: { x: 2, y: 2 },
-    exitPosition: { x: 2, y: 3 },
-    maxSteps: 2,
+    playerPosition: { x: 1, y: 1 },
+    playerDirection: 'right',
+    targetPosition: { x: 5, y: 3 },
+    obstacles: [
+      { position: { x: 2, y: 2 }, type: 'wall' },
+      { position: { x: 3, y: 2 }, type: 'wall' },
+      { position: { x: 4, y: 2 }, type: 'wall' },
+    ],
+    enemies: [],
   },
   {
     id: 3,
-    title: "Labirent",
-    description: "Karmaşık yolları çöz",
+    title: "Koşullar",
+    description: "Engelleri koşul ifadeleriyle aşın",
+    maxCommands: 10,
     grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 2, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
+      ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
+      ['wall', 'empty', 'empty', 'empty', 'empty', 'empty', 'wall'],
+      ['wall', 'empty', 'enemy', 'wall', 'enemy', 'empty', 'wall'],
+      ['wall', 'empty', 'empty', 'empty', 'empty', 'target', 'wall'],
+      ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
     ],
-    startPosition: { x: 2, y: 2 },
-    exitPosition: { x: 3, y: 1 },
-    maxSteps: 3,
-  },
-  {
-    id: 4,
-    title: "Uzun Yolculuk",
-    description: "Daha uzun bir rotayı planla",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 2, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
+    playerPosition: { x: 1, y: 1 },
+    playerDirection: 'right',
+    targetPosition: { x: 5, y: 3 },
+    obstacles: [
+      { position: { x: 3, y: 2 }, type: 'wall' },
     ],
-    startPosition: { x: 1, y: 1 },
-    exitPosition: { x: 3, y: 2 },
-    maxSteps: 10,
-  },
-  {
-    id: 5,
-    title: "Büyük Final",
-    description: "Tüm öğrendiklerini kullan",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 2, 1],
-      [1, 0, 1, 1, 1, 0, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 1, 0, 0, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
+    enemies: [
+      { position: { x: 2, y: 2 }, type: 'goblin', health: 1, direction: 'right' },
+      { position: { x: 4, y: 2 }, type: 'goblin', health: 1, direction: 'left' },
     ],
-    startPosition: { x: 2, y: 3 },
-    exitPosition: { x: 5, y: 1 },
-    maxSteps: 6,
-  },
-  {
-    id: 6,
-    title: "Kırılabilir Duvarlar",
-    description: "Engelleri kırmayı öğren",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 1, 0, 0, 1],
-      [1, 0, 0, 5, 0, 2, 1],
-      [1, 1, 1, 1, 1, 1, 1],
-    ],
-    startPosition: { x: 2, y: 2 },
-    exitPosition: { x: 5, y: 2 },
-    maxSteps: 4,
-  },
-  {
-    id: 7,
-    title: "Çoklu Engeller",
-    description: "Birden fazla engeli aşarak hedefe ulaş",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 5, 0, 0, 2, 1],
-      [1, 0, 1, 5, 0, 0, 1],
-      [1, 0, 5, 0, 5, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
-    ],
-    startPosition: { x: 1, y: 1 },
-    exitPosition: { x: 5, y: 1 },
-    maxSteps: 8,
-  },
-  {
-    id: 8,
-    title: "Labirent ve Engeller",
-    description: "Karmaşık bir yolda ilerle",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 5, 0, 5, 2, 1],
-      [1, 5, 1, 1, 1, 5, 1],
-      [1, 0, 5, 0, 5, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
-    ],
-    startPosition: { x: 1, y: 3 },
-    exitPosition: { x: 5, y: 1 },
-    maxSteps: 8,
-  },
-  {
-    id: 9,
-    title: "Stratejik Yıkım",
-    description: "Doğru engelleri seç",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 5, 0, 5, 2, 1],
-      [1, 5, 1, 1, 1, 0, 1],
-      [1, 0, 5, 0, 5, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
-    ],
-    startPosition: { x: 1, y: 1 },
-    exitPosition: { x: 5, y: 1 },
-    maxSteps: 12,
-  },
-  {
-    id: 10,
-    title: "Büyük Final II",
-    description: "Tüm yeteneklerini kullan",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 5, 1, 0, 2, 1],
-      [1, 5, 1, 1, 5, 0, 1],
-      [1, 0, 5, 1, 0, 5, 1],
-      [1, 0, 0, 5, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
-    ],
-    startPosition: { x: 4, y: 4 },
-    exitPosition: { x: 5, y: 1 },
-    maxSteps: 15,
-  },
-  {
-    id: 11,
-    title: "Labirent Yıkımı",
-    description: "Doğru duvarları kırarak yolunu bul",
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 5, 1, 5, 2, 1],
-      [1, 5, 1, 5, 1, 0, 1],
-      [1, 0, 5, 0, 5, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1],
-    ],
-    startPosition: { x: 3, y: 3 },
-    exitPosition: { x: 5, y: 1 },
-    maxSteps: 10,
   },
 ];
 
@@ -277,8 +175,8 @@ export const useGameStore = create<GameState>((set, get) => {
   const initialState = {
     currentLevel: 1,
     completedLevels: [] as number[],
-    characterPosition: gameLevels[0].startPosition,
-    characterDirection: 'east' as Direction,
+    characterPosition: gameLevels[0].playerPosition,
+    characterDirection: gameLevels[0].playerDirection as Direction,
     characterRotation: 0,
     commands: [] as Command[],
     isRunning: false,
@@ -287,19 +185,19 @@ export const useGameStore = create<GameState>((set, get) => {
     showSuccessModal: false,
     showSuccess: false,
     grid: gameLevels[0].grid,
-    startPosition: gameLevels[0].startPosition,
-    exitPosition: gameLevels[0].exitPosition,
-    maxSteps: gameLevels[0].maxSteps,
+    startPosition: gameLevels[0].playerPosition,
+    exitPosition: gameLevels[0].targetPosition,
+    maxSteps: gameLevels[0].maxCommands,
     levels: gameLevels,
     levelData: {
       title: gameLevels[0].title,
       walls: [],
       breakableWalls: [],
-      target: gameLevels[0].exitPosition,
+      target: gameLevels[0].targetPosition,
     },
     
     // Tutorial durumu
-    isTutorialActive: false,
+    isTutorialActive: true,
     tutorialStep: 'ileri' as 'ileri' | 'calistir' | 'completed' | 'sagaDon' | 'ileri2',
     hasCompletedTutorial: false,
     hasCompletedLevel2Tutorial: false,
@@ -312,11 +210,11 @@ export const useGameStore = create<GameState>((set, get) => {
     if (levelIndex >= 0 && levelIndex < gameLevels.length) {
       initialState.currentLevel = savedProgress.currentLevel;
       initialState.completedLevels = savedProgress.completedLevels;
-      initialState.characterPosition = gameLevels[levelIndex].startPosition;
+      initialState.characterPosition = gameLevels[levelIndex].playerPosition;
       initialState.grid = gameLevels[levelIndex].grid;
-      initialState.startPosition = gameLevels[levelIndex].startPosition;
-      initialState.exitPosition = gameLevels[levelIndex].exitPosition;
-      initialState.maxSteps = gameLevels[levelIndex].maxSteps;
+      initialState.startPosition = gameLevels[levelIndex].playerPosition;
+      initialState.exitPosition = gameLevels[levelIndex].targetPosition;
+      initialState.maxSteps = gameLevels[levelIndex].maxCommands;
     }
   }
 
@@ -425,24 +323,24 @@ export const useGameStore = create<GameState>((set, get) => {
       const cell = grid[newPosition.y]?.[newPosition.x];
       
       // Duvar kontrolü
-      if (cell === 1) return;
+      if (cell === 'wall') return;
       
       // Kapı kontrolü
-      if (cell === 2 && !hasKey) return;
+      if (cell === 'door' && !hasKey) return;
       
       // Kırılabilir engel kontrolü
-      if (cell === 5) return;
+      if (cell === 'enemy') return;
       
       // Anahtar toplama
-      if (cell === 3) {
+      if (cell === 'key') {
         set({ hasKey: true });
         const newGrid = [...grid];
-        newGrid[newPosition.y][newPosition.x] = 0;
+        newGrid[newPosition.y][newPosition.x] = 'empty';
         set({ grid: newGrid });
       }
       
       // Tuzak kontrolü
-      if (cell === 4) {
+      if (cell === 'trap') {
         get().resetLevel();
         return;
       }
@@ -502,8 +400,8 @@ export const useGameStore = create<GameState>((set, get) => {
       setTimeout(() => {
         const level = gameLevels[get().currentLevel - 1];
         set({
-          characterPosition: level.startPosition,
-          characterDirection: 'east',
+          characterPosition: level.playerPosition,
+          characterDirection: level.playerDirection as Direction,
           characterRotation: 0,
           hasKey: true,
           commands: [],
@@ -512,14 +410,14 @@ export const useGameStore = create<GameState>((set, get) => {
           showSuccessModal: false,
           showSuccess: false,
           grid: JSON.parse(JSON.stringify(level.grid)), // Derin kopya oluştur
-          startPosition: level.startPosition,
-          exitPosition: level.exitPosition,
-          maxSteps: level.maxSteps,
+          startPosition: level.playerPosition,
+          exitPosition: level.targetPosition,
+          maxSteps: level.maxCommands,
           levelData: {
             title: level.title,
             walls: [],
             breakableWalls: [],
-            target: level.exitPosition,
+            target: level.targetPosition,
           },
           // Tutorial durumunu sıfırla
           isTutorialActive: false,
@@ -543,8 +441,8 @@ export const useGameStore = create<GameState>((set, get) => {
       // Oyun durumunu sıfırla
       set({
         currentLevel: levelId,
-        characterPosition: level.startPosition,
-        characterDirection: 'east',
+        characterPosition: level.playerPosition,
+        characterDirection: level.playerDirection as Direction,
         characterRotation: 0,
         commands: [],
         isRunning: false,
@@ -553,14 +451,14 @@ export const useGameStore = create<GameState>((set, get) => {
         showSuccessModal: false,
         showSuccess: false,
         grid: JSON.parse(JSON.stringify(level.grid)), // Derin kopya oluştur
-        startPosition: level.startPosition,
-        exitPosition: level.exitPosition,
-        maxSteps: level.maxSteps,
+        startPosition: level.playerPosition,
+        exitPosition: level.targetPosition,
+        maxSteps: level.maxCommands,
         levelData: {
           title: level.title,
           walls: [],
           breakableWalls: [],
-          target: level.exitPosition,
+          target: level.targetPosition,
         },
         // Tutorial durumunu sıfırla
         isTutorialActive: false,
@@ -624,7 +522,7 @@ export const useGameStore = create<GameState>((set, get) => {
 
       // Hedef hücrede kırılabilir engel varsa kır
       const targetCell = grid[targetY]?.[targetX];
-      if (targetCell === 5) {
+      if (targetCell === 'enemy') {
         // Önce breaking sınıfını ekle
         if (typeof document !== 'undefined') {
           // Önce varsa eski breaking sınıfını temizle
@@ -640,7 +538,7 @@ export const useGameStore = create<GameState>((set, get) => {
             // Animasyon bittikten sonra engeli kaldır (300ms)
             setTimeout(() => {
               const newGrid = [...grid];
-              newGrid[targetY][targetX] = 0;
+              newGrid[targetY][targetX] = 'empty';
               set({ grid: newGrid });
             }, 300);
           }

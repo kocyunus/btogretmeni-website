@@ -1,322 +1,181 @@
 "use client";
 
-import { useGameStore, Command } from '@/store/gameStore';
-import { useState } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { StrictModeDroppable } from './StrictModeDroppable';
-
-interface AnimationState {
-  command: string;
-  startX: number;
-  startY: number;
-  isAnimating: boolean;
-}
-
-function CommandList({ commands, isRunning, removeCommand }: { 
-  commands: Command[],
-  isRunning: boolean,
-  removeCommand: (index: number) => void 
-}) {
-  return (
-    <StrictModeDroppable droppableId="commands">
-      {(provided) => (
-        <div
-          {...provided.droppableProps}
-          ref={provided.innerRef}
-          className="flex flex-col gap-2"
-        >
-          {commands.map((cmd, index) => (
-            <Draggable 
-              key={cmd + "-" + index}
-              draggableId={cmd + "-" + index}
-              index={index}
-              isDragDisabled={isRunning}
-            >
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  className={`
-                    group flex items-center justify-between 
-                    bg-stone-800/50 rounded-lg px-3 py-2
-                    border border-amber-900/30 
-                    hover:border-amber-400/30 
-                    hover:bg-stone-800/80 
-                    transition-all duration-200
-                    animate-[commandSettle_0.4s_ease-out]
-                    ${!isRunning ? 'cursor-grab active:cursor-grabbing' : 'cursor-not-allowed'}
-                    ${snapshot.isDragging ? 'shadow-lg ring-2 ring-amber-400/50 scale-105 rotate-1 z-50 !cursor-grabbing bg-stone-700/90' : ''}
-                    ${snapshot.isDragging ? 'shadow-[0_10px_20px_rgba(0,0,0,0.2)]' : ''}
-                    touch-none select-none
-                  `}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-amber-400/50 font-mono text-sm">
-                      {index + 1}.
-                    </span>
-                    <span className="font-mono text-amber-400/90">
-                      {cmd}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => removeCommand(index)}
-                    disabled={isRunning}
-                    className="text-red-400/70 opacity-0 group-hover:opacity-100 
-                           transition-opacity disabled:opacity-50 hover:text-red-400
-                           font-bold px-2"
-                    title="Komutu Sil"
-                  >
-                    ×
-                  </button>
-                </div>
-              )}
-            </Draggable>
-          ))}
-          {provided.placeholder}
-        </div>
-      )}
-    </StrictModeDroppable>
-  );
-}
+import { useEffect, useState } from 'react';
+import { useGameStore } from '@/store/gameStore';
+import { PlayIcon, StopIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
+import { Command } from '@/types/game';
 
 export default function CommandPanel() {
+  const [mounted, setMounted] = useState(false);
   const commands = useGameStore((state) => state.commands);
-  const maxSteps = useGameStore((state) => state.maxSteps);
+  const maxCommands = useGameStore((state) => state.maxCommands);
   const isRunning = useGameStore((state) => state.isRunning);
   const addCommand = useGameStore((state) => state.addCommand);
   const removeCommand = useGameStore((state) => state.removeCommand);
   const clearCommands = useGameStore((state) => state.clearCommands);
-  const runCommands = useGameStore((state) => state.runCommands);
-  const stopCommands = useGameStore((state) => state.stopCommands);
-  const resetLevel = useGameStore((state) => state.resetLevel);
-  const isTutorialActive = useGameStore((state) => state.isTutorialActive);
-  const tutorialStep = useGameStore((state) => state.tutorialStep);
-  const completeTutorialStep = useGameStore((state) => state.completeTutorialStep);
-  const completeTutorial = useGameStore((state) => state.completeTutorial);
-  const currentLevel = useGameStore((state) => state.currentLevel);
+  const startExecution = useGameStore((state) => state.startExecution);
+  const stopExecution = useGameStore((state) => state.stopExecution);
 
-  // Tutorial'ın sadece birinci ve ikinci seviyede aktif olması için kontrol
-  const isTutorialEnabled = (currentLevel === 1 || currentLevel === 2) && isTutorialActive;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const [animation, setAnimation] = useState<AnimationState | null>(null);
+  if (!mounted) {
+    return null;
+  }
 
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination || isRunning) return;
-
-    const sourceIndex = result.source.index;
-    const destinationIndex = result.destination.index;
-
-    const newCommands = Array.from(commands);
-    const [movedCommand] = newCommands.splice(sourceIndex, 1);
-    newCommands.splice(destinationIndex, 0, movedCommand);
-
-    clearCommands();
-    newCommands.forEach(cmd => addCommand(cmd as Command));
-  };
-
-  // Komut ekleme fonksiyonu
-  const handleAddCommand = (command: Command, e: React.MouseEvent) => {
-    if (isRunning) return;
-
-    // Tutorial kontrolü
-    if (isTutorialEnabled) {
-      if (currentLevel === 1) {
-        if (tutorialStep === 'ileri' && command === 'ileri()') {
-          completeTutorialStep('ileri');
-        } else if (tutorialStep !== 'ileri') {
-          return;
-        }
-      } else if (currentLevel === 2) {
-        if (tutorialStep === 'sagaDon' && command === 'sağaDön()') {
-          completeTutorialStep('sagaDon');
-        } else if (tutorialStep === 'ileri2' && command === 'ileri()') {
-          completeTutorialStep('ileri2');
-        } else if (tutorialStep !== 'calistir') {
-          return;
-        }
-      }
-    }
-
-    // Tıklama pozisyonunu al
-    const rect = e.currentTarget.getBoundingClientRect();
-    const startX = e.clientX - rect.left;
-    const startY = e.clientY - rect.top;
-
-    // Animasyonu başlat
-    setAnimation({
-      command,
-      startX,
-      startY,
-      isAnimating: true
-    });
-
-    // Animasyon bitiminde komutu ekle
-    setTimeout(() => {
+  const handleCommandClick = (command: Command) => {
+    if (commands.length < maxCommands && !isRunning) {
       addCommand(command);
-      setAnimation(null);
-    }, 500); // 500ms animasyon süresi
-  };
-
-  // Çalıştırma fonksiyonunu güncelle
-  const handleRunCommands = async () => {
-    if (isTutorialEnabled && tutorialStep === 'calistir') {
-      await runCommands();
-      completeTutorial();
-    } else if (!isTutorialEnabled) {
-      runCommands();
     }
   };
 
-  // Tutorial overlay bileşeni
-  const TutorialOverlay = () => {
-    if (!isTutorialEnabled) return null;
+  const handleRemoveCommand = (index: number) => {
+    if (!isRunning) {
+      removeCommand(index);
+    }
+  };
 
-    return (
-      <div className="fixed inset-0 pointer-events-none z-50">
-        {currentLevel === 1 && tutorialStep === 'ileri' && (
-          <div className="absolute right-[450px] top-[50%] transform -translate-y-1/2 
-                       bg-amber-400 text-black p-4 rounded-lg shadow-xl
-                       animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
-            <div className="arrow-right absolute -right-4 top-1/2 transform -translate-y-1/2" />
-            <p className="font-bold">İleri komutuna tıklayın!</p>
-          </div>
-        )}
+  const handleClearCommands = () => {
+    if (!isRunning) {
+      clearCommands();
+    }
+  };
 
-        {currentLevel === 2 && tutorialStep === 'sagaDon' && (
-          <div className="absolute right-[450px] top-[50%] transform -translate-y-1/2 
-                       bg-amber-400 text-black p-4 rounded-lg shadow-xl
-                       animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
-            <div className="arrow-right absolute -right-4 top-1/2 transform -translate-y-1/2" />
-            <p className="font-bold">Önce sağa dönün!</p>
-          </div>
-        )}
+  const handleStartExecution = () => {
+    if (commands.length > 0 && !isRunning) {
+      startExecution();
+    }
+  };
 
-        {currentLevel === 2 && tutorialStep === 'ileri2' && (
-          <div className="absolute right-[450px] top-[50%] transform -translate-y-1/2 
-                       bg-amber-400 text-black p-4 rounded-lg shadow-xl
-                       animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
-            <div className="arrow-right absolute -right-4 top-1/2 transform -translate-y-1/2" />
-            <p className="font-bold">Şimdi ileri komutunu kullanın!</p>
-          </div>
-        )}
-
-        {tutorialStep === 'calistir' && (
-          <div className="absolute right-[200px] bottom-[150px] 
-                       bg-amber-400 text-black p-4 rounded-lg shadow-xl
-                       animate-[bounce_1s_ease-in-out_infinite] pointer-events-none">
-            <div className="arrow-down absolute -bottom-4 left-1/2 transform -translate-x-1/2" />
-            <p className="font-bold">Şimdi Çalıştır butonuna basın!</p>
-          </div>
-        )}
-      </div>
-    );
+  const handleStopExecution = () => {
+    if (isRunning) {
+      stopExecution();
+    }
   };
 
   return (
-    <div className="h-full flex flex-col bg-gray-900/50 backdrop-blur-sm rounded-xl border-2 border-stone-800/50 overflow-hidden">
-      {/* Komut Butonları */}
-      <div className="flex-none p-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <button
-          onClick={(e) => handleAddCommand('ileri()', e)}
-          disabled={isRunning || commands.length >= maxSteps}
-          className="bg-amber-700/50 hover:bg-amber-600/50 disabled:opacity-50 disabled:cursor-not-allowed
-                   text-white font-medium py-2 px-4 rounded-lg transition-colors
-                   flex items-center justify-center gap-2"
-        >
-          <span>ileri</span>
-          <span className="text-amber-400">()</span>
-        </button>
-        <button
-          onClick={(e) => handleAddCommand('sağaDön()', e)}
-          disabled={isRunning || commands.length >= maxSteps}
-          className="bg-amber-700/50 hover:bg-amber-600/50 disabled:opacity-50 disabled:cursor-not-allowed
-                   text-white font-medium py-2 px-4 rounded-lg transition-colors
-                   flex items-center justify-center gap-2"
-        >
-          <span>sağaDön</span>
-          <span className="text-amber-400">()</span>
-        </button>
-        <button
-          onClick={(e) => handleAddCommand('solaDön()', e)}
-          disabled={isRunning || commands.length >= maxSteps}
-          className="bg-amber-700/50 hover:bg-amber-600/50 disabled:opacity-50 disabled:cursor-not-allowed
-                   text-white font-medium py-2 px-4 rounded-lg transition-colors
-                   flex items-center justify-center gap-2"
-        >
-          <span>solaDön</span>
-          <span className="text-amber-400">()</span>
-        </button>
-        <button
-          onClick={(e) => handleAddCommand('kır()', e)}
-          disabled={isRunning || commands.length >= maxSteps}
-          className="bg-amber-700/50 hover:bg-amber-600/50 disabled:opacity-50 disabled:cursor-not-allowed
-                   text-white font-medium py-2 px-4 rounded-lg transition-colors
-                   flex items-center justify-center gap-2"
-        >
-          <span>kır</span>
-          <span className="text-amber-400">()</span>
-        </button>
-      </div>
-
-      {/* Komut Listesi */}
-      <div className="flex-1 p-2 min-h-0">
-        <div className="bg-gray-950/50 rounded-lg p-2 h-full flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-amber-500 flex items-center gap-2">
-              📜 Komut Listesi
-              <span className="text-sm text-amber-500/70">
-                {commands.length} / {maxSteps} adım
-              </span>
-            </h3>
-          </div>
-
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <StrictModeDroppable droppableId="commands">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-amber-900/50 
-                           scrollbar-track-gray-900/30 min-h-[100px]"
-                >
-                  <CommandList
-                    commands={commands}
-                    isRunning={isRunning}
-                    removeCommand={removeCommand}
-                  />
-                  {provided.placeholder}
-                </div>
-              )}
-            </StrictModeDroppable>
-          </DragDropContext>
+    <div className="h-full flex flex-col bg-gray-900/50 backdrop-blur-sm rounded-xl border-2 border-stone-800/50">
+      {/* Üst Kısım - Komut Butonları */}
+      <div className="p-2 border-b border-stone-800/50">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => handleCommandClick('ileri()')}
+            disabled={commands.length >= maxCommands || isRunning}
+            className="p-2 rounded-lg border border-amber-900/50 bg-gradient-to-b from-stone-800/80 to-stone-900/80 text-white text-sm font-medium
+                     hover:from-stone-700/80 hover:to-stone-800/80 transition-colors duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center gap-2"
+          >
+            <span className="text-lg">⬆️</span>
+            İleri Git
+          </button>
+          <button
+            onClick={() => handleCommandClick('sağaDön()')}
+            disabled={commands.length >= maxCommands || isRunning}
+            className="p-2 rounded-lg border border-amber-900/50 bg-gradient-to-b from-stone-800/80 to-stone-900/80 text-white text-sm font-medium
+                     hover:from-stone-700/80 hover:to-stone-800/80 transition-colors duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center gap-2"
+          >
+            <span className="text-lg">↪️</span>
+            Sağa Dön
+          </button>
+          <button
+            onClick={() => handleCommandClick('solaDön()')}
+            disabled={commands.length >= maxCommands || isRunning}
+            className="p-2 rounded-lg border border-amber-900/50 bg-gradient-to-b from-stone-800/80 to-stone-900/80 text-white text-sm font-medium
+                     hover:from-stone-700/80 hover:to-stone-800/80 transition-colors duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center gap-2"
+          >
+            <span className="text-lg">↩️</span>
+            Sola Dön
+          </button>
+          <button
+            onClick={() => handleCommandClick('kır()')}
+            disabled={commands.length >= maxCommands || isRunning}
+            className="p-2 rounded-lg border border-amber-900/50 bg-gradient-to-b from-stone-800/80 to-stone-900/80 text-white text-sm font-medium
+                     hover:from-stone-700/80 hover:to-stone-800/80 transition-colors duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center gap-2"
+          >
+            <span className="text-lg">⚔️</span>
+            Kır
+          </button>
         </div>
       </div>
 
-      {/* Kontrol Butonları */}
-      <div className="flex-none p-2 grid grid-cols-2 gap-2">
-        <button
-          onClick={handleRunCommands}
-          disabled={isRunning || commands.length === 0}
-          className="bg-green-700/50 hover:bg-green-600/50 disabled:opacity-50 disabled:cursor-not-allowed
-                   text-white font-medium py-3 px-4 rounded-lg transition-colors
-                   flex items-center justify-center gap-2"
-        >
-          <span>🔥 Çalıştır</span>
-        </button>
-        <button
-          onClick={clearCommands}
-          disabled={isRunning || commands.length === 0}
-          className="bg-stone-700/50 hover:bg-stone-600/50 disabled:opacity-50 disabled:cursor-not-allowed
-                   text-white font-medium py-3 px-4 rounded-lg transition-colors
-                   flex items-center justify-center gap-2"
-        >
-          <span>🧹 Temizle</span>
-        </button>
+      {/* Orta Kısım - Seçilen Komutlar */}
+      <div className="flex-1 p-2 overflow-y-auto min-h-0">
+        <div className="space-y-2">
+          {commands.map((command, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-2 rounded-lg bg-gray-800/50 border border-gray-700/50"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">
+                  {command === 'ileri()' && '⬆️'}
+                  {command === 'sağaDön()' && '↪️'}
+                  {command === 'solaDön()' && '↩️'}
+                  {command === 'kır()' && '⚔️'}
+                </span>
+                <span className="text-sm text-gray-300">
+                  {command === 'ileri()' && 'İleri Git'}
+                  {command === 'sağaDön()' && 'Sağa Dön'}
+                  {command === 'solaDön()' && 'Sola Dön'}
+                  {command === 'kır()' && 'Kır'}
+                </span>
+              </div>
+              <button
+                onClick={() => handleRemoveCommand(index)}
+                disabled={isRunning}
+                className="text-gray-500 hover:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          {commands.length === 0 && (
+            <div className="text-center py-4 text-gray-500 text-sm">
+              Henüz komut seçilmedi
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Tutorial Overlay */}
-      {isTutorialActive && <TutorialOverlay />}
+      {/* Alt Kısım - Kontrol Butonları */}
+      <div className="p-2 border-t border-stone-800/50">
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={handleStartExecution}
+            disabled={commands.length === 0 || isRunning}
+            className="col-span-2 p-2 rounded-lg bg-gradient-to-b from-amber-600 to-amber-700
+                     hover:from-amber-500 hover:to-amber-600
+                     disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed
+                     text-white font-medium
+                     flex items-center justify-center gap-2"
+          >
+            <PlayIcon className="w-5 h-5" />
+            Çalıştır
+          </button>
+          <button
+            onClick={handleClearCommands}
+            disabled={commands.length === 0 || isRunning}
+            className="p-2 rounded-lg bg-gradient-to-b from-gray-700 to-gray-800
+                     hover:from-gray-600 hover:to-gray-700
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     text-white
+                     flex items-center justify-center"
+          >
+            <ArrowPathIcon className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="mt-2 text-center text-xs text-gray-500">
+          {maxCommands - commands.length} komut hakkınız kaldı
+        </div>
+      </div>
     </div>
   );
 } 
